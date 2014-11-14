@@ -14,5 +14,6 @@
 * right click and open a git bash. Type git clone git@bitbucket.org:napcrisis/is428.git
 * Create a new database called "newssources" and import the mysql file in setup folder. Remember to click newssources database first before importing.
 * by visiting http://localhost/is428/treemap.htmlyou should see a proper treemap. 
-<br>
+
+
 [Wiki](https://wiki.smu.edu.sg/1415t1is428/Anna%27s_kakia_Proposal)
