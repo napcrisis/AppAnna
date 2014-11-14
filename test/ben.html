@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<head>
 <meta charset="utf-8">
 
 <!-- #ben note the css of .trendline-->
@@ -24,9 +25,11 @@
         stroke-width: 0.8;
     }
 </style>
+</head>
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://techanjs.org/techan.min.js"></script>
+<script src="../lib/jquery-1.11.1.js"></script>
+<script src="../lib/d3.js"></script>
+<script src="../lib/techan.js"></script>
 <script>
 
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -66,18 +69,19 @@
     // .on("drag", drag);
 
     // it allows the user to move the trendline
-
     var trendline = techan.plot.trendline()
             .xScale(x)
             .yScale(y);
-
+    var maxClose = -1;
+    var minClose = -1;
     d3.csv("data.csv", function(error, data) {
         var accessor = close.accessor();
-        // #ben this part makes the lines. must be same date for start and end and set the start value as minimum value and end as max, this will create a straight line
-        var trendlineData = [
-            { start: { date: new Date(2013, 9, 9), value: 38}, end: { date: new Date(2013, 9, 9), value: 100 } }
-        ];
-        data = data.slice(0, 200).map(function(d) {
+
+        // maxClose = d3.max(data, function(d) { return +d.Close;} );
+        // minClose = d3.min(data, function(d) { return +d.Close;} );
+
+        //#ben, take note that slice loses us alot of data.i removed it data.slice(0, 200).map...
+        data = data.map(function(d) {
             return {
                 date: parseDate(d.Date),
                 open: +d.Open,
@@ -89,8 +93,14 @@
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
         x.domain(data.map(accessor.d));
+        var doma = techan.scale.plot.ohlc(data, accessor).domain();
+        
+        // steal lower and upp from their domain method
+        console.log(doma);
+        minClose = doma[0];
+        maxClose = doma[1];
+        
         y.domain(techan.scale.plot.ohlc(data, accessor).domain());
-
         svg.append("g")
                 .datum(data)
                 .attr("class", "close")
@@ -110,12 +120,27 @@
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .text("Price ($)");
-        // #ben this part is where the line is created and added to the chart
-        svg.append("g")
-                .datum(trendlineData)
-                .attr("class", "trendlines")
-                .call(trendline);
+        
     });
-
+    $(function() {
+        $( "#testingcode" ).click(function() {
+            // #ben this part makes the lines. must be same date for start and end and set the start value as minimum value and end as max, this will create a straight line
+            if( $('.trendlines').length){
+                $(".trendlines").remove();
+            } else {
+                var trendlineData = [
+                    { start: { date: new Date(2013, 9, 9), value: minClose}, end: { date: new Date(2013, 9, 9), value: maxClose } }
+                ];
+                // #ben this part is where the line is created and added to the chart
+                svg.append("g")
+                    .datum(trendlineData)
+                    .attr("class", "trendlines")
+                    .call(trendline);
+            }   
+        });
+    });
+    
 </script>
-
+<button id="testingcode">Trigger/Remove a line</button>
+</body>
+</html>
