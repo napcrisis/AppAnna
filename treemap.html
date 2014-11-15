@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Treemap - Neat Zoom Effect</title>
+    <title>Treemap - App Anna</title>
     <script type="text/javascript" src="./lib/modernizr.js" charset="utf-8"></script>
     <script type="text/javascript" src="./lib/d3.js"></script>
     <style type="text/css">
@@ -71,6 +71,34 @@
             fill-opacity: .5;
             cursor: pointer
         }
+		
+		.tooltip {
+			position: absolute;
+			width: 220px;
+			height: auto;
+			padding: 10px;
+			background-color: white;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			pointer-events: none;
+		}
+
+		.tooltip.hidden {
+			display: none;
+		}
+
+		.tooltip p {
+			margin: 0;
+			font-family: sans-serif;
+			font-size: 16px;
+			line-height: 20px;
+		}
+
+
     </style>
 </head>
 <body>
@@ -79,8 +107,8 @@
 
 <script type="text/javascript">
     var supportsForeignObject = Modernizr.svgforeignobject;
-    var chartWidth = 550;
-    var chartHeight = 550;
+    var chartWidth = 600;
+    var chartHeight = 600;
     var xscale = d3.scale.linear().range([0, chartWidth]);
     var yscale = d3.scale.linear().range([0, chartHeight]);
     var headerHeight = 20;
@@ -89,6 +117,14 @@
     var root;
     var node;
     var color = d3.scale.category10();
+	var colorScale;
+	var smallest;
+	var largest;
+	var fillColour = function (d) {
+			return d.changesoverperiod == Math.log(smallest) ? colorScale.range()[4] : colorScale(d.changesoverperiod);
+	};
+		
+	function formatNumber(d) { d3.format(",d");}
     var treemap = d3.layout.treemap()
         .round(false)
         .size([chartWidth, chartHeight])
@@ -108,7 +144,7 @@
         .attr("width", chartWidth)
         .attr("height", chartHeight)
         .append("svg:g");
-
+		
     // traverse and count max min
     function traverse(p) {
         if(p.children){ // has children
@@ -127,7 +163,7 @@
           }
           return [min,max];
         }
-        return [p.value,p.value];
+        return [p.changesoverperiod,p.changesoverperiod];
     }       
 
     d3.json("./data/data.json", function(data) {
@@ -141,11 +177,19 @@
             return d.children;
         });
 
-
-        var minMax = traverse(data);
-        var colorScale = d3.scale.ordinal()
-            .range(["#cb181d","#fb6a4a","#fcae91","#fee5d9","#edf8e9","#bae4b3","#74c476","#31a354","#006d2c"])
-            .domain([Math.log(minMax[0]),Math.log(minMax[1])]);
+        var minMax = traverse(data); 
+		if(minMax[0]<1) {
+			smallest = 1;
+			largest = minMax[1]+minMax[0];
+		}
+		var smallest = Math.log(minMax[0]
+		var negSects = (Math.log(0)-Math.log(minMax[0]))/4;
+		var posSects = Math.log(minMax[1])/4; 
+		console.log(Math.log(5)-Math.log(2));
+		console.log(Math.log(3));
+        colorScale = d3.scale.linear()
+            .range(["#cb181d","#fb6a4a","#fcae91","#fee5d9","#ffffff","#bae4b3","#74c476","#31a354","#006d2c"])
+            .domain([Math.log(minMax[0]),Math.log(minMax[0])+negSects,Math.log(minMax[0])+(negSects*2),Math.log(minMax[0])+(negSects*3),Math.log(0),posSects, posSects*2, Math.log(minMax[1])]);
 
         // create parent cells
         var parentCells = chart.selectAll("g.cell.parent")
@@ -156,7 +200,7 @@
             .append("g")
             .attr("class", "cell parent")
             .on("click", function(d) {
-                zoom(d);
+				zoom(node === d.parent ? d: root);
             });
         parentEnterTransition.append("rect")
             .attr("width", function(d) {
@@ -200,17 +244,45 @@
             .data(children, function(d) {
                 return "c-" + d.name;
             });
+		
+		//div for tooltip
+		var divt = d3.select("body").append("divt")
+		.attr("class", "tooltip");
+		
+		var vol_format = d3.format("0,000"); 
+		
         // enter transition
         var childEnterTransition = childrenCells.enter()
             .append("g")
             .attr("class", "cell child")
             .on("click", function(d) {
-                zoom(node === d.parent ? root : d.parent);
-            });
+				alert("line charts and all here!");
+            })
+			.on("mouseover", function(d) {
+				divt.transition().duration(200);     
+				
+				var textToPrint = "";
+				
+				if(d.changesoverperiod > 0 ){
+					textToPrint = "Stock Symbol: " + d.name + "<br>Company: <br>Price: $" + d.Close + "<br>Net Change: <font color='green'><b>" + d3.round(d.changesoverperiod,2) + "</b></font><br>Net Change Percentage: " + "<br>Volume: " + vol_format(d.value);
+				} else {
+					textToPrint = "Stock Symbol: " + d.name + "<br>Company: <br>Price: $" + d.Close + "<br>Net Change: <font color='red'><b>" + d3.round(d.changesoverperiod,2) + "</b></font><br>Net Change Percentage: " + "<br>Volume: " + vol_format(d.value);
+				}
+				divt.html(textToPrint)
+				.style("left", (d3.event.pageX) + "px")     
+				.style("top", (d3.event.pageY) + "px")
+				.style("opacity", 1);   
+			})
+			.on("mouseout", function(d) {
+				divt.transition()        
+				.duration(500)      
+				.style("opacity", 0);   
+			});
+			
         childEnterTransition.append("rect")
             .classed("background", true)
             .style("fill", function(d) {
-                return colorScale(d.value);
+                return fillColour(d);
             });
         childEnterTransition.append('foreignObject')
             .attr("class", "foreignObject")
@@ -223,10 +295,7 @@
             .append("xhtml:body")
             .attr("class", "labelbody")
             .append("div")
-            .attr("class", "label")
-            .text(function(d) {
-                return d.name;
-            });
+            .attr("class", "label");
 
         if (supportsForeignObject) {
             childEnterTransition.selectAll(".foreignObject")
@@ -250,7 +319,7 @@
                 return d.dy;
             })
             .style("fill", function(d) {
-                return colorScale(d.value);
+                return fillColour(d);
             });
         childUpdateTransition.select(".foreignObject")
             .attr("width", function(d) {
@@ -258,10 +327,6 @@
             })
             .attr("height", function(d) {
                 return Math.max(0.01, d.dy);
-            })
-            .select(".labelbody .label")
-            .text(function(d) {
-                return d.name;
             });
         // exit transition
         childrenCells.exit()
@@ -349,10 +414,7 @@
                         .filter(function(d) {
                             return d.parent === self.node; // only get the children for selected group
                         })
-                        .select(".foreignObject .labelbody .label")
-                        .style("color", function(d) {
-                            return idealTextColor(color(d.parent.name));
-                        });
+                        .select(".foreignObject .labelbody .label");
 
                     if (supportsForeignObject) {
                         chart.selectAll(".cell.child")
@@ -378,10 +440,6 @@
             })
             .attr("height", function(d) {
                 return d.children ? headerHeight: Math.max(0.01, ky * d.dy);
-            })
-            .select(".labelbody .label")
-            .text(function(d) {
-                return d.name;
             });
 
         // update the width/height of the rects
