@@ -35,9 +35,16 @@ while ($r = mysql_fetch_array($result)) {
     }
     $child = new ind;
     $child->name=$r["Symbol"];
-    $child->Open=$r["Open"];
+    $child->company=$r["Companies"];
+    $child->volume=$r["Volume"];
+    $child->date=$r["Date"];
+    $child->low=$r["Low"];
+    $child->open=$r["Open"];
+    $child->high=$r["High"];
+    $child->close=$r["Close"];
+    $child->adjclose=$r["Adj Close"];
     $child->netChange=$r["Adj Close"]-$r["beforeAdjClose"];
-    $child->percentage=$r["Adj Close"]-$r["beforeAdjClose"];
+    $child->percentage=$child->netChange/$r["beforeAdjClose"]*100;
     unset($child->children);
     $industry->children[] = $child;
 
