@@ -125,7 +125,16 @@
 <body>
 <div id="body"></div>
 <div id="legend" class="footer">
-<img src="./images/legend.jpg" width = "200px"></img></div>
+Legend: <img src="./images/legend.jpg" width = "200px"></img></div>
+</div>
+<div id="daterange" class="footer">
+Date Range: <select>
+  <option value="1">1 Day</option>
+  <option value="7">1 Week</option>
+  <option value="30">1 Month</option>
+  <option value="180">6 Months</option>
+  <option value="365">1 Year</option>
+</select></div>
 </div>
 <!-- Button that triggers the popup -->
 <button id="my-button">POP IT UP</button>
@@ -217,8 +226,9 @@ $(function() {
             return d.children;
         });
 
-        var minMax = traverse(data); 
-		var legend = d3.select("#legend").append("p").text("Legend: Toggle Date:");
+        var minMax = traverse(data);
+		var legendText = d3.round(minMax[0],2) +  + d3.round(minMax[1],2);
+		var legend = d3.select("#legend").append("p").html(legendText);
 		
 		//get colour of the node
 		var negSects = (0-minMax[0])/4;
@@ -336,12 +346,10 @@ $(function() {
 				//this section flips the tooltip if it's nearing the edge
 				var xpos = d3.event.pageX;
 				if(d3.event.pageX >= chartWidth - 230) {
-					console.log("living on the edge!!");
 					xpos = d3.event.pageX - 230;
 				}
 				var ypos = d3.event.pageY;
 				if(d3.event.pageY >= chartHeight - 130) {
-					console.log("living on the edge!!");
 					ypos = d3.event.pageY - 130;
 				}
 				
@@ -415,7 +423,6 @@ $(function() {
             .remove();
 
         d3.select("select").on("change", function() {
-            console.log("select zoom(node)");
             treemap.value(this.value == "size" ? size : count)
                 .nodes(root);
             zoom(node);
