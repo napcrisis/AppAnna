@@ -133,40 +133,25 @@
     </table>
 </div>
 <div id="daterange" class="footer">
-Date Range: <select>
-  <option value="1">1 Day</option>
-  <option value="7">1 Week</option>
-  <option value="30">1 Month</option>
-  <option value="180">6 Months</option>
-  <option value="365">1 Year</option>
-</select></div>
+Date Range: <br>
+<input type="radio" class="daterange" name="daterange" value="1" checked>1 Day
+<input type="radio" class="daterange" name="daterange" value="7">1 Week
+<input type="radio" class="daterange" name="daterange" value="30">1 Month 
+<input type="radio" class="daterange" name="daterange" value="180">6 Months
+<input type="radio" class="daterange" name="daterange" value="365">1 Year
 </div>
-<!-- Button that triggers the popup -->
-<button id="my-button">POP IT UP</button>
-<!-- Element to pop up -->
 
 <div id="element_to_pop_up">
     <a class="b-close">x<a/>
     Content of popup
 </div>
-<script type="text/javascript">
-$(function() {
-    $('#my-button').bind('click', function(e) {
-        e.preventDefault();
-        $('#element_to_pop_up').bPopup({
-            appendTo: 'form'
-            , zIndex: 2
-            , modalClose: false
-        });
-    });
- });
-</script>
+
 </body>
 
 <script type="text/javascript">
     var supportsForeignObject = Modernizr.svgforeignobject;
     var chartWidth = $(window).width();
-    var chartHeight = $(window).height()-100;
+    var chartHeight = $(window).height()-80;
     var xscale = d3.scale.linear().range([0, chartWidth]);
     var yscale = d3.scale.linear().range([0, chartHeight]);
     var headerHeight = 20;
@@ -323,7 +308,8 @@ $(function() {
 		
 		//div for tooltip
 		var divt = d3.select("body").append("divt")
-		.attr("class", "tooltip");
+		.attr("class", "tooltip")
+		.style("opacity", 0);
 		
 		var vol_format = d3.format("0,000"); 
 		
@@ -332,7 +318,13 @@ $(function() {
             .append("g")
             .attr("class", "cell child")
             .on("click", function(d) {
-				alert("line charts and all here!");
+				$('#element_to_pop_up').bPopup({
+					appendTo: 'form'
+					, zIndex: 2
+					, modalClose: true
+					, modal: true
+					, modalColor : "#000" 
+				});
             })
 			.on("mouseover", function(d) {
 				this.parentNode.appendChild(this); // workaround for bringing elements to the front (ie z-index)
