@@ -47,9 +47,8 @@
     <a class="b-close"><img src="./img/cross.png" height="20"/><a/>
     <div id="linebody"></div>
     <div>
-        <input type="radio" name="graphtype" value="line" onclick="updateData(0)" checked>Line
-        <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">Candlestick<br>
-        <button id="testingcode">Trigger/Remove a line</button>
+        <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
+        <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick
     </div>
 </div>
 

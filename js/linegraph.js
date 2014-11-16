@@ -1,81 +1,96 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
         width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        height = 400 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
-
-var x = techan.scale.financetime()
-        .range([0, width]);
-
-var y = d3.scale.linear()
-        .range([height, 0]);
-
-var candlestick = techan.plot.candlestick()
-        .xScale(x)
-        .yScale(y);
-
-var close = techan.plot.close()
-        .xScale(x)
-        .yScale(y);
-
-var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-var xTopAxis = d3.svg.axis()
-        .scale(x)
-        .orient("top");
-
-var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-
-var yRightAxis = d3.svg.axis()
-        .scale(y)
-        .orient("right");
-
-var ohlcAnnotation = techan.plot.axisannotation()
-        .axis(yAxis)
-        .format(d3.format(',.2fs'));
-
-var ohlcRightAnnotation = techan.plot.axisannotation()
-        .axis(yRightAxis)
-        .translate([width, 0])
-        .format(d3.format(',.2fs'));
-
-var timeAnnotation = techan.plot.axisannotation()
-        .axis(xAxis)
-        .format(d3.time.format('%d-%b-%Y'))
-        .width(65)
-        .translate([0, height]);
-
-var timeTopAnnotation = techan.plot.axisannotation()
-        .axis(xTopAxis);
-
-var svg = d3.select("#linebody").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var coordsText = svg.append('text')
-        .style("text-anchor", "end")
-        .attr("class", "coords")
-        .attr("x", width - 5)
-        .attr("y", 15);
-
+var x;
+var y;
+var candlestick;
+var close;
+var xAxis;
+var xTopAxis;
+var yAxis;
+var yRightAxis;
+var ohlcAnnotation;
+var ohlcRightAnnotation;
+var timeAnnotation;
+var timeTopAnnotation;
+var svg;
+var coordsText;
 var trendline = techan.plot.trendline()
         .xScale(x)
         .yScale(y);
 var maxClose = -1;
 var minClose = -1;
+var crosshair;
 
-var crosshair = techan.plot.crosshair()
-    .xAnnotation([timeAnnotation, timeTopAnnotation])
-    .yAnnotation([ohlcAnnotation, ohlcRightAnnotation])
-    .on("enter", enter)
-    .on("out", out)
-    .on("move", move);
+function configPopup(d){
+    $("#linebody").empty();
+    $('body').append('<div>');  
+    $('#defaultGraphType').prop('checked', true);
+}
+function createNews(d){
+    
+}
+function initLineGraph(){
+    x = techan.scale.financetime()
+            .range([0, width]);
+    y = d3.scale.linear()
+            .range([height, 0]);
+    candlestick = techan.plot.candlestick()
+            .xScale(x)
+            .yScale(y);
+    close = techan.plot.close()
+            .xScale(x)
+            .yScale(y);
+    xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+    xTopAxis= d3.svg.axis()
+            .scale(x)
+            .orient("top");
+    yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+    yRightAxis = d3.svg.axis()
+            .scale(y)
+            .orient("right");
+    ohlcAnnotation = techan.plot.axisannotation()
+            .axis(yAxis)
+            .format(d3.format(',.2fs'));
+
+    ohlcRightAnnotation = techan.plot.axisannotation()
+            .axis(yRightAxis)
+            .translate([width, 0])
+            .format(d3.format(',.2fs'));
+    timeAnnotation = techan.plot.axisannotation()
+            .axis(xAxis)
+            .format(d3.time.format('%d-%b-%Y'))
+            .width(65)
+            .translate([0, height]);
+    timeTopAnnotation = techan.plot.axisannotation()
+            .axis(xTopAxis);
+
+
+    svg = d3.select("#linebody").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    coordsText = svg.append('text')
+            .style("text-anchor", "end")
+            .attr("class", "coords")
+            .attr("x", width - 5)
+            .attr("y", 15);
+    crosshair = techan.plot.crosshair()
+        .xAnnotation([timeAnnotation, timeTopAnnotation])
+        .yAnnotation([ohlcAnnotation, ohlcRightAnnotation])
+        .on("enter", enter)
+        .on("out", out)
+        .on("move", move);
+    }
+
 $(function(){
     $( "#testingcode" ).click(function() {
         // #ben this part makes the lines. must be same date for start and end and set the start value as minimum value and end as max, this will create a straight line

@@ -169,8 +169,10 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php", function(data) {
         .append("g")
         .attr("class", "cell child")
         .on("click", function(d) {
-        	$("linebody").empty();
+            configPopup(d);
+            createNews(d);
         	selectedCompany = d;
+            initLineGraph();
         	makeLineGraph();
 			$('#element_to_pop_up').bPopup({
 				appendTo: 'form'
