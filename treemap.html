@@ -6,7 +6,8 @@
     <title>Treemap - App Anna</title>
     <script type="text/javascript" src="./lib/modernizr.js" charset="utf-8"></script>
     <script type="text/javascript" src="./lib/d3.js"></script>
-	<script type="text/javascript" src="./lib/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="./lib/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="./lib/jquery.bpopup.min.js"></script>
     <style type="text/css">
         body {
             overflow: hidden;
@@ -100,18 +101,58 @@
 			line-height: 20px;
 		}
 		
+		#element_to_pop_up { 
+			display:none; 
+		}
+		#element_to_pop_up { 
+			background-color:#fff;
+			border-radius:15px;
+			color:#000;
+			display:none; 
+			padding:20px;
+			min-width:400px;
+			min-height: 180px;
+		}
+		.b-close{
+			cursor:pointer;
+			position:absolute;
+			right:10px;
+			top:5px;
+		}
+		
     </style>
 </head>
 <body>
 <div id="body"></div>
 <div id="legend" class="footer">
 <img src="./images/legend.jpg" width = "200px"></img></div>
+</div>
+<!-- Button that triggers the popup -->
+<button id="my-button">POP IT UP</button>
+<!-- Element to pop up -->
+
+<div id="element_to_pop_up">
+    <a class="b-close">x<a/>
+    Content of popup
+</div>
+<script type="text/javascript">
+$(function() {
+    $('#my-button').bind('click', function(e) {
+        e.preventDefault();
+        $('#element_to_pop_up').bPopup({
+            appendTo: 'form'
+            , zIndex: 2
+            , modalClose: false
+        });
+    });
+ });
+</script>
 </body>
 
 <script type="text/javascript">
     var supportsForeignObject = Modernizr.svgforeignobject;
-    var chartWidth = screen.width;
-    var chartHeight = screen.height-170;
+    var chartWidth = $(window).width();
+    var chartHeight = $(window).height()-100;
     var xscale = d3.scale.linear().range([0, chartWidth]);
     var yscale = d3.scale.linear().range([0, chartHeight]);
     var headerHeight = 20;
@@ -126,6 +167,8 @@
         .round(false)
         .size([chartWidth, chartHeight])
         .sticky(true)
+        .mode("squarify")
+        .ratio(.8 * (1 + Math.sqrt(20))) // changing this allow us to modify slightly the outcome of squarify algo
         .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
           if ( a.name < b.name )
             return -1;
@@ -175,7 +218,7 @@
         });
 
         var minMax = traverse(data); 
-		var legend = d3.select("#legend").append("p").text("Legend: \t\tToggle Date:");
+		var legend = d3.select("#legend").append("p").text("Legend: Toggle Date:");
 		
 		//get colour of the node
 		var negSects = (0-minMax[0])/4;
