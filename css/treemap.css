@@ -29,9 +29,6 @@ rect {
   display: block;
   margin: auto;
 }
-.parent {
-  fill-opacity: .5;
-}
 .parent .label {
   color: #FFFFFF;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
@@ -61,7 +58,7 @@ rect {
 
 .cell {
   font-size: 11px;
-  fill-opacity: .5;
+  fill-opacity: .8;
   cursor: pointer
 }
 

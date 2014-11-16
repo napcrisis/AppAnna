@@ -9,7 +9,9 @@ var transitionDuration = 500;
 var root;
 var node;
 var color = d3.scale.category10();
-	
+
+var selectedCompany; // LINKAGE TO LINEGRAPH
+
 function formatNumber(d) { d3.format(",d");}
 var treemap = d3.layout.treemap()
     .round(false)
@@ -54,7 +56,7 @@ function traverse(p) {
     return [p.percentage,p.percentage];
 }       
 
-d3.json("./data/zoeydata.json", function(data) {
+d3.json("./php_scripts/ajax/query/stock_treemap_json.php", function(data) {
     node = root = data;
     var nodes = treemap.nodes(root);
 
@@ -167,6 +169,9 @@ d3.json("./data/zoeydata.json", function(data) {
         .append("g")
         .attr("class", "cell child")
         .on("click", function(d) {
+        	$("linebody").empty();
+        	selectedCompany = d;
+        	makeLineGraph();
 			$('#element_to_pop_up').bPopup({
 				appendTo: 'form'
 				, zIndex: 2

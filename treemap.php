@@ -42,9 +42,9 @@
     </div>
 </div>
 <div id="body"></div>
-
+<form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
 <div id="element_to_pop_up">
-    <a class="b-close">x<a/>
+    <a class="b-close"><img src="./img/cross.png" height="20"/><a/>
     <div id="linebody"></div>
     <div>
         <input type="radio" name="graphtype" value="line" onclick="updateData(0)" checked>Line
