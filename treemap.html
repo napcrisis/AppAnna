@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Treemap - Neat Zoom Effect</title>
+    <title>Treemap - App Anna</title>
     <script type="text/javascript" src="./lib/modernizr.js" charset="utf-8"></script>
     <script type="text/javascript" src="./lib/d3.js"></script>
+    <script type="text/javascript" src="./lib/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="./lib/jquery.bpopup.min.js"></script>
     <style type="text/css">
         body {
             overflow: hidden;
@@ -17,7 +19,8 @@
         .footer {
             z-index: 1;
             display: block;
-            font-size: 26px;
+            float:left;
+            font-size: 12px;
             font-weight: 200;
             text-shadow: 0 1px 0 #fff;
         }
@@ -71,16 +74,99 @@
             fill-opacity: .5;
             cursor: pointer
         }
+		
+		.tooltip {
+			position: absolute;
+			word-wrap: break-word;
+			width: 220px;
+			height: auto;
+			padding: 10px;
+			background-color: white;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			pointer-events: none;
+		}
+
+		.tooltip.hidden {
+			display: none;
+		}
+
+		.tooltip p {
+			margin: 0;
+			font-family: sans-serif;
+			font-size: 16px;
+			line-height: 20px;
+		}
+		
+		#element_to_pop_up { 
+			display:none; 
+		}
+		#element_to_pop_up { 
+			background-color:#fff;
+			border-radius:15px;
+			color:#000;
+			display:none; 
+			padding:20px;
+			min-width:400px;
+			min-height: 180px;
+		}
+		.b-close{
+			cursor:pointer;
+			position:absolute;
+			right:10px;
+			top:5px;
+		}
+		
     </style>
 </head>
 <body>
 <div id="body"></div>
+<div id="legend" class="footer">
+    Legend: 
+    <table>
+        <tr><td colspan="3"><img src="./images/legend.jpg" width = "200px"/></td></tr>
+        <tr><td style="text-align:left; margin:0;" id="minlegend"></td><td style="text-align:center; margin:0;">0</td><td style="text-align:right; margin:0;" id="maxlegend"></td></tr>
+    </table>
+</div>
+<div id="daterange" class="footer">
+Date Range: <select>
+  <option value="1">1 Day</option>
+  <option value="7">1 Week</option>
+  <option value="30">1 Month</option>
+  <option value="180">6 Months</option>
+  <option value="365">1 Year</option>
+</select></div>
+</div>
+<!-- Button that triggers the popup -->
+<button id="my-button">POP IT UP</button>
+<!-- Element to pop up -->
+
+<div id="element_to_pop_up">
+    <a class="b-close">x<a/>
+    Content of popup
+</div>
+<script type="text/javascript">
+$(function() {
+    $('#my-button').bind('click', function(e) {
+        e.preventDefault();
+        $('#element_to_pop_up').bPopup({
+            appendTo: 'form'
+            , zIndex: 2
+            , modalClose: false
+        });
+    });
+ });
+</script>
 </body>
 
 <script type="text/javascript">
     var supportsForeignObject = Modernizr.svgforeignobject;
-    var chartWidth = 550;
-    var chartHeight = 550;
+    var chartWidth = $(window).width();
+    var chartHeight = $(window).height()-100;
     var xscale = d3.scale.linear().range([0, chartWidth]);
     var yscale = d3.scale.linear().range([0, chartHeight]);
     var headerHeight = 20;
@@ -89,10 +175,14 @@
     var root;
     var node;
     var color = d3.scale.category10();
+		
+	function formatNumber(d) { d3.format(",d");}
     var treemap = d3.layout.treemap()
         .round(false)
         .size([chartWidth, chartHeight])
         .sticky(true)
+        .mode("squarify")
+        .ratio(.8 * (1 + Math.sqrt(20))) // changing this allow us to modify slightly the outcome of squarify algo
         .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
           if ( a.name < b.name )
             return -1;
@@ -108,7 +198,7 @@
         .attr("width", chartWidth)
         .attr("height", chartHeight)
         .append("svg:g");
-
+		
     // traverse and count max min
     function traverse(p) {
         if(p.children){ // has children
@@ -127,10 +217,10 @@
           }
           return [min,max];
         }
-        return [p.value,p.value];
+        return [p.percentage,p.percentage];
     }       
 
-    d3.json("./data/data.json", function(data) {
+    d3.json("./data/zoeydata.json", function(data) {
         node = root = data;
         var nodes = treemap.nodes(root);
 
@@ -141,12 +231,42 @@
             return d.children;
         });
 
-
         var minMax = traverse(data);
-        var colorScale = d3.scale.ordinal()
-            .range(["#cb181d","#fb6a4a","#fcae91","#fee5d9","#edf8e9","#bae4b3","#74c476","#31a354","#006d2c"])
-            .domain([Math.log(minMax[0]),Math.log(minMax[1])]);
+		var minLegendText = d3.round(minMax[0],2);
+        var maxLegendText = d3.round(minMax[1],2);
+        d3.select("#minlegend").append("span").html(minLegendText);
+        d3.select("#maxlegend").append("span").html(maxLegendText);
+		
+		//get colour of the node
+		var negSects = (0-minMax[0])/4;
+		var posSects = minMax[1]/4; 
+		var fillColor = function(d) {
+			if(d.percentage < minMax[0]+negSects) {
+				return colorScale(1);
+			}else if(d.percentage < minMax[0]+(negSects*2)) {
+				return colorScale(2);
+			}else if(d.percentage < minMax[0]+(negSects*3)) {
+				return colorScale(3);
+			}else if(d.percentage < 0) {
+				return colorScale(4);
+			}else if(d.percentage == 0) {
+				return colorScale(5);
+			}else if(d.percentage < posSects) {
+				return colorScale(6);
+			}else if(d.percentage < posSects*2) {
+				return colorScale(7);
+			}else if(d.percentage < posSects*3) {
+				return colorScale(8);
+			}else {
+				return colorScale(9);
+			}
+		}
+		
 
+		var colorScale = d3.scale.ordinal()
+			.range(["#cb181d","#fb6a4a","#fcae91","#fee5d9","#ffffff","#bae4b3","#74c476","#31a354","#006d2c"])
+			.domain([1,2,3,4,5,6,7,8,9]);
+		
         // create parent cells
         var parentCells = chart.selectAll("g.cell.parent")
             .data(parents, function(d) {
@@ -156,7 +276,7 @@
             .append("g")
             .attr("class", "cell parent")
             .on("click", function(d) {
-                zoom(d);
+				zoom(node === d.parent ? d: root);
             });
         parentEnterTransition.append("rect")
             .attr("width", function(d) {
@@ -200,17 +320,66 @@
             .data(children, function(d) {
                 return "c-" + d.name;
             });
+		
+		//div for tooltip
+		var divt = d3.select("body").append("divt")
+		.attr("class", "tooltip");
+		
+		var vol_format = d3.format("0,000"); 
+		
         // enter transition
         var childEnterTransition = childrenCells.enter()
             .append("g")
             .attr("class", "cell child")
             .on("click", function(d) {
-                zoom(node === d.parent ? root : d.parent);
-            });
+				alert("line charts and all here!");
+            })
+			.on("mouseover", function(d) {
+				this.parentNode.appendChild(this); // workaround for bringing elements to the front (ie z-index)
+				d3.select(this)
+                .select(".background")
+                .style("stroke", "#000000");
+				
+				divt.transition().duration(200);     
+				
+				var textToPrint = "";
+
+				if(d.netChange > 0 ){
+					textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + d.adjclose + "</b></font>   <i>"+ d.date + "</i><br>Net Change: <font color='green'><b>" + d3.round(d.netChange,2) + "  " + d3.round(d.percentage,2) + "%</b></font><br>Volume: " + vol_format(d.volume) + "<br><i>(Click for more details)</i>";
+				} else {
+					textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + d.adjclose + "</b></font>   <i>"+ d.date + "</i><br>Net Change: <font color='red'><b>" + d3.round(d.netChange,2) + "  " + d3.round(d.percentage,2) + "%</b></font><br>Volume: " + vol_format(d.volume) + "<br><i>(Click for more details)</i>";
+				}
+				
+				//this section flips the tooltip if it's nearing the edge
+				var xpos = d3.event.pageX;
+				if(d3.event.pageX >= chartWidth - 230) {
+					xpos = d3.event.pageX - 230;
+				}
+				var ypos = d3.event.pageY;
+				if(d3.event.pageY >= chartHeight - 130) {
+					ypos = d3.event.pageY - 130;
+				}
+				
+				divt.html(textToPrint)
+				.style("left", xpos + "px")     
+				.style("top", ypos + "px")
+				.style("opacity", 1);   
+			})
+			.on("mouseout", function(d) {
+				d3.select(this)
+                .attr("filter", "")
+                .select(".background")
+                .style("stroke", "#FFFFFF");
+				
+				divt.transition()        
+				.duration(500)      
+				.style("opacity", 0);   
+			});
+			
         childEnterTransition.append("rect")
             .classed("background", true)
             .style("fill", function(d) {
-                return colorScale(d.value);
+                return fillColor(d);
             });
         childEnterTransition.append('foreignObject')
             .attr("class", "foreignObject")
@@ -223,10 +392,7 @@
             .append("xhtml:body")
             .attr("class", "labelbody")
             .append("div")
-            .attr("class", "label")
-            .text(function(d) {
-                return d.name;
-            });
+            .attr("class", "label");
 
         if (supportsForeignObject) {
             childEnterTransition.selectAll(".foreignObject")
@@ -250,7 +416,7 @@
                 return d.dy;
             })
             .style("fill", function(d) {
-                return colorScale(d.value);
+                return fillColor(d);
             });
         childUpdateTransition.select(".foreignObject")
             .attr("width", function(d) {
@@ -258,17 +424,12 @@
             })
             .attr("height", function(d) {
                 return Math.max(0.01, d.dy);
-            })
-            .select(".labelbody .label")
-            .text(function(d) {
-                return d.name;
             });
         // exit transition
         childrenCells.exit()
             .remove();
 
         d3.select("select").on("change", function() {
-            console.log("select zoom(node)");
             treemap.value(this.value == "size" ? size : count)
                 .nodes(root);
             zoom(node);
@@ -279,7 +440,7 @@
 
 
     function size(d) {
-        return d.value;
+        return d.volume;
     }
 
 
@@ -349,10 +510,7 @@
                         .filter(function(d) {
                             return d.parent === self.node; // only get the children for selected group
                         })
-                        .select(".foreignObject .labelbody .label")
-                        .style("color", function(d) {
-                            return idealTextColor(color(d.parent.name));
-                        });
+                        .select(".foreignObject .labelbody .label");
 
                     if (supportsForeignObject) {
                         chart.selectAll(".cell.child")
@@ -378,10 +536,6 @@
             })
             .attr("height", function(d) {
                 return d.children ? headerHeight: Math.max(0.01, ky * d.dy);
-            })
-            .select(".labelbody .label")
-            .text(function(d) {
-                return d.name;
             });
 
         // update the width/height of the rects
