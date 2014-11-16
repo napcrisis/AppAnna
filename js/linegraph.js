@@ -1,84 +1,4 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-    body {
-        font: 10px sans-serif;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-
-    path.line {
-        fill: none;
-        stroke: #000000;
-        stroke-width: 1;
-    }
-    
-    path.candle {
-        stroke: #000000;
-    }
-
-    path.candle.body {
-        stroke-width: 0;
-    }
-
-    path.candle.wick {
-        stroke-width: 1;
-    }
-
-    path.candle.up {
-        fill: #00AA00;
-        stroke: #00AA00;
-    }
-
-    path.candle.down {
-        fill: #FF0000;
-        stroke: #FF0000;
-    }
-
-    .y.annotation.left path {
-        fill: #00AA00;
-    }
-
-    .y.annotation.right path {
-        fill: #FF0000;
-    }
-
-    .x.annotation path {
-        fill: #DDD80E;
-    }
-
-    .crosshair {
-        cursor: crosshair;
-    }
-
-    .crosshair path.wire {
-        stroke: #DDDDDD;
-        stroke-dasharray: 1, 1;
-    }
-    
-    .crosshair .axisannotation path {
-        fill: #DDDDDD;
-    }
-
-    .trendline {
-        stroke: #DDD80E;
-        stroke-dasharray: 2, 2;
-    }
-    
-</style>
-<body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://techanjs.org/techan.min.js"></script>
-<script src="./libs/jquery-1.11.1.js"></script>
-<script>
-
-    var margin = {top: 20, right: 50, bottom: 30, left: 50},
+var margin = {top: 20, right: 50, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -139,7 +59,7 @@
             .on("out", out)
             .on("move", move);
    
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#linebody").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -158,7 +78,7 @@
     var minClose = -1;
     
     // this part here is draw the outline
-    d3.csv("./files/data.csv", function(error, data) {
+    d3.csv("./data/single_news_data.csv", function(error, data) {
         var accessor = candlestick.accessor();
 
         data = data.map(function(d) {
@@ -212,7 +132,7 @@
     });
     
     // this part here is draw line graph
-    d3.csv("./files/data.csv", function(error, data) {
+    d3.csv("./data/single_news_data.csv", function(error, data) {
         var accessor = close.accessor();
 
         data = data.map(function(d) {
@@ -265,7 +185,7 @@
             svg.selectAll(".close").remove();
 
             // this part here is draw candlestick
-            d3.csv("./files/data.csv", function(error, data) {
+            d3.csv("./data/single_news_data.csv", function(error, data) {
                 var accessor = candlestick.accessor();
 
                 data = data.map(function(d) {
@@ -350,10 +270,3 @@
         });
     });
     
-</script>
-<div>
-    <input type="radio" name="graphtype" value="line" onclick="updateData(0)" checked>Line
-    <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">Candlestick<br>
-    <button id="testingcode">Trigger/Remove a line</button>
-</div>
-</body>

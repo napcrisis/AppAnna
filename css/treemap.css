@@ -1,55 +1,73 @@
-#chart {
-width: 620px;
-height: 500px;
-background: #bbb;
+body {
+  overflow: hidden;
+  margin: 0;
+  font-size: 12px;
+  font-family: "Helvetica Neue", Helvetica;
 }
 
-text {
-pointer-events: none;
+.footer {
+  margin:20px 10px 0 0;
+  z-index: 1;
+  display: block;
+  float:right;
+  font-size: 12px;
+  font-weight: 200;
+  text-shadow: 0 1px 0 #fff;
 }
 
-.grandparent text { /* header text */
-font-weight: bold;
-font-size: medium;
-font-family: "Open Sans", Helvetica, Arial, sans-serif; 
+svg {
+  overflow: hidden;
 }
 
 rect {
-fill: none;
-stroke: #fff;
+  pointer-events: all;
+  cursor: pointer;
+  stroke: #EEEEEE;
 }
 
-rect.parent,
-.grandparent rect {
-stroke-width: 2px;
+.chart {
+  display: block;
+  margin: auto;
+}
+.parent {
+  fill-opacity: .5;
+}
+.parent .label {
+  color: #FFFFFF;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  -webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-.grandparent rect {
-fill: #fff;
+.labelbody {
+  background: transparent;
 }
 
-.children rect.parent,
-.grandparent rect {
-cursor: pointer;
+.label {
+  margin: 2px;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  -webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-rect.parent {
-pointer-events: all; 
+.child .label {
+  white-space: pre-wrap;
+  text-align: center;
+  text-overflow: ellipsis;
 }
 
-.children:hover rect.child,
-.grandparent:hover rect {
-fill: #aaa;
+.cell {
+  font-size: 11px;
+  fill-opacity: .5;
+  cursor: pointer
 }
 
-.textdiv { /* text in the boxes */
-font-size: medium;
-padding: 5px;
-font-family: "Open Sans", Helvetica, Arial, sans-serif; 
-}
-
-#tooltip {
+.tooltip {
   position: absolute;
+  word-wrap: break-word;
   width: 220px;
   height: auto;
   padding: 10px;
@@ -63,14 +81,32 @@ font-family: "Open Sans", Helvetica, Arial, sans-serif;
   pointer-events: none;
 }
 
-#tooltip.hidden {
+.tooltip.hidden {
   display: none;
 }
 
-#tooltip p {
+.tooltip p {
   margin: 0;
   font-family: sans-serif;
   font-size: 16px;
   line-height: 20px;
 }
 
+#element_to_pop_up { 
+  display:none; 
+}
+#element_to_pop_up { 
+  background-color:#fff;
+  border-radius:15px;
+  color:#000;
+  display:none; 
+  padding:20px;
+  min-width:400px;
+  min-height: 180px;
+}
+.b-close{
+  cursor:pointer;
+  position:absolute;
+  right:10px;
+  top:5px;
+}
