@@ -1,42 +1,138 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        width = 920 - margin.left - margin.right,
+        height = 360 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var x;
-var y;
-var candlestick;
-var close;
-var xAxis;
-var xTopAxis;
-var yAxis;
-var yRightAxis;
-var ohlcAnnotation;
-var ohlcRightAnnotation;
-var timeAnnotation;
-var timeTopAnnotation;
-var svg;
-var coordsText;
-var trendline = techan.plot.trendline()
-        .xScale(x)
-        .yScale(y);
+var trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+
 var maxClose = -1;
 var minClose = -1;
-var crosshair;
+var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var megatitleitem=$("<h5/>"), titleitem=$("<b/>").addClass("list-group-item-heading"), 
+newslistitem = $("<li/>").addClass("list-group-item").click(function(){
+    $("#news-list").children().each(function(){
+        $(this).removeClass("active");
+    });
+    $(this).addClass("active");
+    showNewsForCurrentlySelected();
+}),
+descriptionitem = $("<p/>").addClass("list-group-item-text"), 
+smalldate=$("<small/>");;
 
+function htmlDecode(value){
+  return $('<div/>').html(value).text();
+}
+function htmlEncode(value){
+  return $('<div/>').text(value).html();
+}
 function configPopup(d){
+    $("#popupElementDiv").css({'height': $( window ).height()+'px'});
     $("#linebody").empty();
-    $('body').append('<div>');  
+    var companyInfo = $("#companyInfo")
+        .clone()
+        .show();
+    companyInfo.find('#companyName').text(d.company);
+    companyInfo.find('#companySymbol').text(d.name);
+    companyInfo.find('#companyValue').text("$"+d.close);
+    companyInfo.find('#growthVal')
+        .text(d3.round(d.netChange,2))
+        .attr("color",d.netChange>0?"green":d.netChange==0?"grey":"red");
+    companyInfo.find('#growthPercent')
+        .text("("+d3.round(d.percentage,2)+"%)")
+        .attr("color",d.netChange>0?"green":d.netChange==0?"grey":"red");
+
+    if(d.netChange>0){
+        companyInfo.find('#postiveIcon').show();
+        companyInfo.find('#negativeIcon').hide();
+    } else if(d.netChange<0){
+        companyInfo.find('#postiveIcon').hide();
+        companyInfo.find('#negativeIcon').show();
+    } else {
+        companyInfo.find('#postiveIcon').hide();
+        companyInfo.find('#negativeIcon').hide();
+    }
+
+    $("#linebody").append(companyInfo);
     $('#defaultGraphType').prop('checked', true);
 }
-function createNews(d){
-    
+function mysqlStupidDateFormat(yyddmm){
+    var parts = yyddmm.split("-");
+    return parts[2] + " " + months[parts[1]-1] + " "+ parts[0];
+}
+function populateNews(d){
+    updateNews(d.name);
+}
+function showNewsForCurrentlySelected(){
+    $("#news-list").children().each(function(){
+        if($(this).hasClass("active")){
+            // populate this news onto news-description
+
+            $(".trendlines").remove();
+            $(".x.annotation.top").remove();
+            var dateParts = $(this).attr("date").split("-");
+            var newsDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            var trendlineData = [
+                { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
+            ];
+            // this part is where the line is created and added to the chart
+            svg.append("g")
+                .datum(trendlineData)
+                .attr("class", "trendlines")
+                .call(trendline);
+            //here is for annotation to indicate of news occurence
+            svg.append("g")
+                .attr("class", "x annotation top")
+                .datum([{value: newsDate}])
+                .call(timeAnnotation);
+            var url = "./php_scripts/ajax/query/single_news.php?newsid="+$(this).attr("newsid");
+            $.get(url,function(data,status){
+                currentNewsdata = jQuery.parseJSON(data);
+                $("#news-description").empty();
+                var header = megatitleitem.clone(true).text(htmlDecode(currentNewsdata.headline)+" ");
+                smalldate.clone(true).text(mysqlStupidDateFormat(currentNewsdata.date)).appendTo(header);
+                header.appendTo($("#news-description"));
+                $("<p/>").text(htmlDecode(unescape("Microchip Technology Incorporated (MCHP), a leading provider of microcontroller, mixed signal, analog and Flash-IP solutions, announced today that it expects net sales for its second quarter of fiscal 2015 ending September 30, 2014 to be about $546.2 million, which includes about $16.9 million from the recent ISSC acquisition. On July 31, 2014, Microchip provided guidance of net sales to be $560.0 million to $575.9 million which included $18 million from the ISSC acquisition. Excluding the ISSC acquisition, Microchip’s net sales in the September 2014 quarter are expected to be $529.3 million, which is down 0.4% sequentially on a non-GAAP basis and up 0.1% on a GAAP basis. There is no difference in GAAP and non-GAAP net sales in the September 2014 quarter. However, in the June 2014 quarter there was a difference in the GAAP and non-GAAP net sales from our acquisition of Supertex of $2.5 million as GAAP does not recognize revenue on the sell through of product sitting in the distribution channel on the date an acquisition occurs but Microchip includes this in its non-GAAP results. There will be no conference call in conjunction with this press release."))).appendTo($("#news-description"));
+            });
+            
+        }
+    });
+}
+function updateNewsList(){
+    $("#news-list").empty();
+    if(newsdata!=null){
+        for(var i=0;i<newsdata.length;i++){
+            var news = newsdata[i];
+            var newsitemcontainer = newslistitem.clone(true);
+            var newsheader = titleitem.clone(true).text(htmlDecode(news.headline)+" ");
+            newsheader.appendTo(newsitemcontainer);
+            descriptionitem.clone(true).text(htmlDecode(news.description)).appendTo(newsitemcontainer);
+            newsitemcontainer.attr("date",news.date);
+            newsitemcontainer.attr("newsid",news.id);
+            newsitemcontainer.appendTo($("#news-list"));
+        }
+    }
+    $("#news-list").children().first().addClass("active");
+    showNewsForCurrentlySelected();
+}
+function updateNews(stock){
+    var url = "./php_scripts/ajax/query/single_company_news.php?symbol="+stock;
+    $.get(url,function(data,status){
+        newsdata = jQuery.parseJSON(data);
+        updateNewsList();
+    });
 }
 function initLineGraph(){
     x = techan.scale.financetime()
             .range([0, width]);
     y = d3.scale.linear()
             .range([height, 0]);
+    volume = techan.plot.volume()
+            .accessor(techan.accessor.ohlc()) // For volume bar highlighting
+            .xScale(x)
+            .yScale(y);
+    trendline = techan.plot.trendline()
+            .xScale(x)
+            .yScale(y);
     candlestick = techan.plot.candlestick()
             .xScale(x)
             .yScale(y);
@@ -90,32 +186,6 @@ function initLineGraph(){
         .on("out", out)
         .on("move", move);
     }
-
-$(function(){
-    $( "#testingcode" ).click(function() {
-        // #ben this part makes the lines. must be same date for start and end and set the start value as minimum value and end as max, this will create a straight line
-        if( $('.trendlines').length){
-            $(".trendlines").remove();
-            $(".x.annotation.top").remove();
-        } else {
-            var trendlineData = [
-                { start: { date: new Date(2013, 9, 9), value: minClose}, end: { date: new Date(2013, 9, 9), value: maxClose } }
-            ];
-            // #ben this part is where the line is created and added to the chart
-            svg.append("g")
-                .datum(trendlineData)
-                .attr("class", "trendlines")
-                .call(trendline);
-        
-            //here is for annotation to indicate of news occurence
-            svg.append("g")
-                .attr("class", "x annotation top")
-                .datum([{value: new Date(2013, 9, 9)}])
-                .call(timeAnnotation);
-        }   
-    });
-});
-
 
 function enter() {
     coordsText.style("display", "inline");
@@ -199,6 +269,28 @@ function updateData(inputval) {
     }
 }
 function makeLineGraph(){
+    d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
+        var accessor = volume.accessor();
+
+        data = data.map(function(d) {
+            return {
+                date: parseDate(d.Date),
+                open: +d.Open,
+                high: +d.High,
+                low: +d.Low,
+                close: +d.Close,
+                volume: +d.Volume
+            };
+        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+
+        x.domain(data.map(accessor.d));
+        y.domain(techan.scale.plot.volume(data, accessor.v).domain());
+
+        svg.append("g")
+            .datum(data)
+            .attr("class", "volume")
+            .call(volume);
+    });
     // this part here is draw the outline
     d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
         var accessor = candlestick.accessor();
@@ -213,7 +305,7 @@ function makeLineGraph(){
                 volume: +d.Volume
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-        
+
         x.domain(data.map(accessor.d));
         var doma = techan.scale.plot.ohlc(data, accessor).domain();
         
@@ -221,7 +313,7 @@ function makeLineGraph(){
         minClose = doma[0];
         maxClose = doma[1];
         
-        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+        y.domain(doma);
         
         // draw top line
         svg.append("g")

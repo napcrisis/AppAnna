@@ -1,6 +1,6 @@
 var supportsForeignObject = Modernizr.svgforeignobject;
 var chartWidth = $(window).width();
-var chartHeight = $(window).height()-80;
+var chartHeight = $(window).height()-70;
 var xscale = d3.scale.linear().range([0, chartWidth]);
 var yscale = d3.scale.linear().range([0, chartHeight]);
 var headerHeight = 20;
@@ -170,11 +170,11 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php", function(data) {
         .attr("class", "cell child")
         .on("click", function(d) {
             configPopup(d);
-            createNews(d);
+            populateNews(d);
         	selectedCompany = d;
             initLineGraph();
         	makeLineGraph();
-			$('#element_to_pop_up').bPopup({
+			$('#popupElementDiv').bPopup({
 				appendTo: 'form'
 				, zIndex: 2
 				, modalClose: true

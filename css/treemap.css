@@ -4,7 +4,14 @@ body {
   font-size: 12px;
   font-family: "Helvetica Neue", Helvetica;
 }
-
+#companyInfo{
+  display:none; 
+  margin-left:5px; 
+  margin-bottom:10px;
+}
+#companyInfo font{
+  margin-right:5px;
+}
 .footer {
   margin:20px 10px 0 0;
   z-index: 1;
@@ -24,7 +31,10 @@ rect {
   cursor: pointer;
   stroke: #EEEEEE;
 }
-
+#daterange input{
+  margin-left:3px;
+  margin-right:3px;
+}
 .chart {
   display: block;
   margin: auto;
@@ -89,17 +99,15 @@ rect {
   line-height: 20px;
 }
 
-#element_to_pop_up { 
+#popupElementDiv { 
   display:none; 
-}
-#element_to_pop_up { 
   background-color:#fff;
   border-radius:15px;
   color:#000;
   display:none; 
   padding:20px;
-  min-width:400px;
-  min-height: 180px;
+  width:960px;
+  height: 720px;
 }
 .b-close{
   cursor:pointer;
