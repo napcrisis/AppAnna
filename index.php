@@ -10,7 +10,16 @@
     <script type="text/javascript" src="./lib/jquery.bpopup.min.js"></script>
     <script type="text/javascript" src="./lib/techan.js"></script>
     <script type="text/javascript" src="./lib/bootstrap.js"></script>
-
+    <script type='text/javascript'>
+        <?php
+            // if date is not set, we will have to use 
+            if(isset($_GET["daterange"]) && is_numeric($_GET["daterange"])){
+                echo "var dateRange = ".$_GET["daterange"].";";
+            } else {
+                echo "var dateRange = 1;";
+            }
+        ?>
+    </script>
     <link rel="stylesheet" type="text/css" href="./css/treemap.css">
     <link rel="stylesheet" type="text/css" href="./css/linegraph.css">
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.css">
@@ -35,11 +44,23 @@
 
         <div id="daterange" class="footer">
             Date Range:
-            <input type="radio" class="daterange" name="daterange" value="1" checked>1 Day
-            <input type="radio" class="daterange" name="daterange" value="7">1 Week
-            <input type="radio" class="daterange" name="daterange" value="30">1 Month 
-            <input type="radio" class="daterange" name="daterange" value="180">6 Months
-            <input type="radio" class="daterange" name="daterange" value="365">1 Year
+            <div class="btn-group btn-group-xs" role="group">
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=1"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(!isset($_GET["daterange"]) || $_GET["daterange"]==1){echo "disabled";} ?>>1d</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=7"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(isset($_GET["daterange"]) && $_GET["daterange"]==7){echo "disabled";} ?>>7d</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=28"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(isset($_GET["daterange"]) && $_GET["daterange"]==28){echo "disabled";} ?>>1m</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=182"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(isset($_GET["daterange"]) && $_GET["daterange"]==182){echo "disabled";} ?>>6m</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=364"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(isset($_GET["daterange"]) && $_GET["daterange"]==364){echo "disabled";} ?>>1y</button></a>
+                </div>
+            </div>
         </div>
     </div>
     <div id="body"></div>
@@ -50,6 +71,24 @@
         <div style="margin-left:30px;">
             <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
             <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick
+            Date Range:
+            <div class="btn-group btn-group-xs" role="group">
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=1"><button type="button" class="btn btn-default" style="text-align:center;" >1d</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=7"><button type="button" class="btn btn-default" style="text-align:center;" >7d</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=28"><button type="button" class="btn btn-default" style="text-align:center;" >1m</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=182"><button type="button" class="btn btn-default" style="text-align:center;" >6m</button></a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="./index.php?daterange=364"><button type="button" class="btn btn-default" style="text-align:center;" >1y</button></a>
+                </div>
+            </div>
         </div>
         <div class="row">
             <ul class="list-group col-md-5" id="news-list"></ul>
