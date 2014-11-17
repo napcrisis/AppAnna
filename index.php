@@ -68,7 +68,7 @@
         </div>
 		
 		<div id="companysearch" class="footer">
-			<form><input name="search" id="search" type="text" size="40" placeholder="Search for Company" /></form>
+			<input name="search" id="search" type="text" size="40" placeholder="Search for Company" />
 		</div>
 		
     </div>
