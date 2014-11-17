@@ -17,19 +17,19 @@ while ($row = mysql_fetch_array($result)) {
 	for($x=0;$x<count($output_array[0]);$x++){
 		preg_match_all($dateregx, $output_array[0][$x], $date_array);
 		$strDate = date("Y-m-d",strtotime($date_array[1][0]));
-		preg_match_all($newsregx, $output_array[0][$x], $news_array);
-		$insert_sql = "INSERT INTO `newssources`.`yahoorss` (`date`,`symbol`,`link`,`source`,`headline`) VALUES ";
+		preg_match_all($newsregx, $output_array[0][$x], $news_array);		
 		for($y=0;$y<count($news_array[1]);$y++){
+			$insert_sql = "INSERT INTO `newssources`.`yahoorss` (`date`,`symbol`,`link`,`source`,`headline`) VALUES ";
 			$link = $news_array[1][$y];
 			$headline = str_replace("'","&#39;",$news_array[2][$y]);
 			$source = $news_array[3][$y];
-			$row = "('".$strDate."','".$symbol."','".$link."','".$source."','".$headline."'),";
+			$row = "('".$strDate."','".$symbol."','".$link."','".$source."','".$headline."')";
 			$insert_sql.=$row;
-		}
-		$insert_sql = trim($insert_sql, ",");
-		$failure = $failure + mysql_query($insert_sql)==1?0:1;		
+			if(mysql_query($insert_sql)){
+				echo $insert_sql;
+			}
+		}	
 	}
-	echo "Ran with ".$failure." failures for ".$symbol;
 }
 
 ?>

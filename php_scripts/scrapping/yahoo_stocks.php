@@ -23,9 +23,9 @@
 	$selectSql = 'select `Symbol` from listedcompanies where `Symbol` not in (select distinct(`Symbol`) from yahooprices)';
 	$prefix = "http://real-chart.finance.yahoo.com/table.csv?s=";
 	$postfix = "&a=".$startMonth."&b=".$startDay."&c=".$startYear."&d=".$endMonth."&e=".$endDay."&f=".$endYear."&g=d&ignore=.csv";
-	echo $prefix . "GOOG" .$postfix;
-	die();
+	// correct: d=10&e=17&f=2014&g=d&a=11&b=12&c=1980&ignore=.csv
 	$result = mysql_query($selectSql);
+	$postfix = "&d=10&e=17&f=2014&g=d&a=11&b=12&c=1980&ignore=.csv";
 	while ($row = mysql_fetch_array($result)) {
 		$url = $prefix. $row[0].$postfix;
 		$csv = file_get_contents($url);
@@ -48,7 +48,7 @@
 					$adjclose = $parts[6];
 					$insert_sql = "INSERT INTO `newssources`.`yahooprices` VALUES ('".$symbol."','".$date."', '".$open."', '".$high."', '".$low."', '".$close."', '".$volume."', '".$adjclose."');";
 					if(mysql_query($insert_sql)!=1){
-						echo $symbol . "failed to be inserted <br>";
+						echo $insert_sql." of ".$symbol . "failed to be inserted <br>";
 					}
 					
 				}
