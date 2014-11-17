@@ -56,7 +56,7 @@ function traverse(p) {
     return [p.percentage,p.percentage];
 }       
 
-d3.json("./php_scripts/ajax/query/stock_treemap_json.php", function(data) {
+d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dateRange, function(data) {
     node = root = data;
     var nodes = treemap.nodes(root);
 
