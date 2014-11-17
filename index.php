@@ -10,11 +10,15 @@
     <script type="text/javascript" src="./lib/jquery.bpopup.min.js"></script>
     <script type="text/javascript" src="./lib/techan.js"></script>
     <script type="text/javascript" src="./lib/bootstrap.js"></script>
+	<script type="text/javascript" src="./lib/jquery.autocomplete.min.js"></script>
+	
+	<script type="text/javascript" src="./js/search.js"></script>
 
     <link rel="stylesheet" type="text/css" href="./css/treemap.css">
     <link rel="stylesheet" type="text/css" href="./css/linegraph.css">
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="./css/news.css">
+	<link rel="stylesheet" type="text/css" href="./css/search.css">
 </head>
 <body>
     <div>
@@ -41,6 +45,11 @@
             <input type="radio" class="daterange" name="daterange" value="180">6 Months
             <input type="radio" class="daterange" name="daterange" value="365">1 Year
         </div>
+		
+		<div id="companysearch" class="footer">
+			<form><input name="search" id="search" type="text" size="40" placeholder="Search for Company" /></form>
+		</div>
+		
     </div>
     <div id="body"></div>
     <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->

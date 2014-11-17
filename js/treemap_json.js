@@ -168,6 +168,9 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php", function(data) {
     var childEnterTransition = childrenCells.enter()
         .append("g")
         .attr("class", "cell child")
+		.attr("data-symbol",function(d){
+			return d.name;
+		})
         .on("click", function(d) {
             configPopup(d);
             populateNews(d);
