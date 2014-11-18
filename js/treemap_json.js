@@ -24,6 +24,14 @@ var treemap = d3.layout.treemap()
     })
     .mode("squarify") // default
     .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
+      if(a.parent && a.parent.name=="nasdaq"){
+        if(b.parent && b.parent.name=="nasdaq"){
+            return a.value < b.value? -1:1;
+        }
+        return 1;
+      } else if (b.parent && b.parent.name=="nasdaq"){
+        return 1;
+      }
       return a.volume-b.volume;
     });
 var chart = d3.select("#body")
