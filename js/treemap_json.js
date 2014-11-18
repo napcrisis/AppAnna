@@ -158,9 +158,7 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
         });
 	
 	//div for tooltip
-	var divt = d3.select("body").append("divt")
-	.attr("class", "tooltip")
-	.style("opacity", 0);
+	var divt = d3.select("body").select("#divt");
 	
 	var vol_format = d3.format("0,000"); 
 	
@@ -170,6 +168,24 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
         .attr("class", "cell child")
 		.attr("data-symbol",function(d){
 			return d.name;
+		})
+		.attr("data-company", function(d) {
+			return d.company;
+		})
+		.attr("data-adjclose", function(d) {
+			return d.adjclose;
+		})
+		.attr("data-date", function(d) {
+			return d.date;
+		})
+		.attr("data-netchange", function(d) {
+			return d.netChange;
+		})
+		.attr("data-percentage", function(d) {
+			return d.percentage;
+		})
+		.attr("data-volume", function(d) {
+			return d.volume;
 		})
         .on("click", function(d) {
             configPopup(d);
@@ -184,6 +200,13 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 				, modal: true
 				, modalColor : "#000" 
 			});
+			//remove highlighting and tooltip of selected company
+			d3.select("body").select("#divt2").style("opacity", 0);
+			d3.select("body").select("#divt").style("display", "");
+			$(".child").each(function(){
+				$(this).children().last().attr("style","");
+			});
+			
         })
 		.on("mouseover", function(d) {
 			this.parentNode.appendChild(this); // workaround for bringing elements to the front (ie z-index)
