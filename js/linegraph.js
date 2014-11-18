@@ -16,6 +16,8 @@ newslistitem = $("<li/>").addClass("list-group-item").click(function(){
         $(this).addClass("active");
     }
     drawVerticalTrendLine();
+}), newslink = $("<p/>").text("link").attr("target","_blank").click(function(){
+    window.open($(this).attr("url"),'Anna News',width=600,height=300);
 }),
 descriptionitem = $("<p/>").addClass("list-group-item-text"), 
 smalldate=$("<small/>");;
@@ -98,11 +100,12 @@ function updateNewsList(){
             descriptionitem.clone(true).text(htmlDecode(news.description)).appendTo(newsitemcontainer);
             newsitemcontainer.attr("date",news.date);
             newsitemcontainer.attr("newsid",news.id);
+            newslink.clone(true).attr("url",news.link).appendTo(newsitemcontainer);
             newsitemcontainer.appendTo($("#news-list"));
         }
     }
     $("#news-list").children().first().addClass("active");
-    showNewsForCurrentlySelected();
+    drawVerticalTrendLine();
 }
 function updateNews(stock){
     var url = "./php_scripts/ajax/query/single_company_news.php?symbol="+stock;
