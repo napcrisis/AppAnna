@@ -13,22 +13,19 @@ var color = d3.scale.category10();
 var selectedCompany; // LINKAGE TO LINEGRAPH
 
 function formatNumber(d) { d3.format(",d");}
+var counter = 0;
 var treemap = d3.layout.treemap()
     .round(false)
+    .ratio(chartHeight / chartWidth * 0.5 * (1 + Math.sqrt(5)))
     .size([chartWidth, chartHeight])
     .sticky(true)
-    .mode("squarify")
-    .ratio(.8 * (1 + Math.sqrt(20))) // changing this allow us to modify slightly the outcome of squarify algo
-    .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
-      if ( a.name < b.name )
-        return -1;
-      if ( a.name > b.name )
-        return 1;
-      return 0; })
     .value(function(d) {
         return size(d);
+    })
+    .mode("squarify") // default
+    .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
+      return a.volume-b.volume;
     });
-
 var chart = d3.select("#body")
     .append("svg:svg")
     .attr("width", chartWidth)
@@ -66,7 +63,6 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
     var parents = nodes.filter(function(d) {
         return d.children;
     });
-
     var minMax = traverse(data);
 	var minLegendText = d3.round(minMax[0],2);
     var maxLegendText = d3.round(minMax[1],2);
@@ -97,10 +93,9 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 			return colorScale(9);
 		}
 	}
-	
 
 	var colorScale = d3.scale.ordinal()
-		.range(["#cb181d","#fb6a4a","#fcae91","#fee5d9","#ffffff","#bae4b3","#74c476","#31a354","#006d2c"])
+		.range(["#D35400","#F9690E","#F2784B","#EB974E","#FDE3A7","#6BB9F0","#3498DB","#4183D7","#3A539B"])
 		.domain([1,2,3,4,5,6,7,8,9]);
 	
     // create parent cells
