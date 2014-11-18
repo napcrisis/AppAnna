@@ -23,13 +23,7 @@ var treemap = d3.layout.treemap()
         return size(d);
     })
     .mode("squarify") // default
-    // .ratio(.5 * (1 + Math.sqrt(10))) // changing this allow us to modify slightly the outcome of squarify algo
     .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
-      // if ( a.name < b.name )
-      //   return -1;
-      // if ( a.name > b.name )
-      //   return 1;
-      // return 0; 
       return a.volume-b.volume;
     });
 var chart = d3.select("#body")

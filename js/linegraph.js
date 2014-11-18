@@ -10,11 +10,12 @@ var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var megatitleitem=$("<h5/>"), titleitem=$("<b/>").addClass("list-group-item-heading"), 
 newslistitem = $("<li/>").addClass("list-group-item").click(function(){
-    $("#news-list").children().each(function(){
+    if($(this).hasClass("active")){
         $(this).removeClass("active");
-    });
-    $(this).addClass("active");
-    showNewsForCurrentlySelected();
+    } else {
+        $(this).addClass("active");
+    }
+    drawVerticalTrendLine();
 }),
 descriptionitem = $("<p/>").addClass("list-group-item-text"), 
 smalldate=$("<small/>");;
@@ -62,7 +63,7 @@ function mysqlStupidDateFormat(yyddmm){
 function populateNews(d){
     updateNews(d.name);
 }
-function showNewsForCurrentlySelected(){
+function drawVerticalTrendLine(){
     $("#news-list").children().each(function(){
         if($(this).hasClass("active")){
             // populate this news onto news-description
@@ -83,16 +84,6 @@ function showNewsForCurrentlySelected(){
                 .attr("class", "x annotation top")
                 .datum([{value: newsDate}])
                 .call(timeAnnotation);
-            var url = "./php_scripts/ajax/query/single_news.php?newsid="+$(this).attr("newsid");
-            $.get(url,function(data,status){
-                currentNewsdata = jQuery.parseJSON(data);
-                $("#news-description").empty();
-                var header = megatitleitem.clone(true).text(htmlDecode(currentNewsdata.headline)+" ");
-                smalldate.clone(true).text(mysqlStupidDateFormat(currentNewsdata.date)).appendTo(header);
-                header.appendTo($("#news-description"));
-                $("<p/>").text(htmlDecode(unescape("Microchip Technology Incorporated (MCHP), a leading provider of microcontroller, mixed signal, analog and Flash-IP solutions, announced today that it expects net sales for its second quarter of fiscal 2015 ending September 30, 2014 to be about $546.2 million, which includes about $16.9 million from the recent ISSC acquisition. On July 31, 2014, Microchip provided guidance of net sales to be $560.0 million to $575.9 million which included $18 million from the ISSC acquisition. Excluding the ISSC acquisition, Microchip’s net sales in the September 2014 quarter are expected to be $529.3 million, which is down 0.4% sequentially on a non-GAAP basis and up 0.1% on a GAAP basis. There is no difference in GAAP and non-GAAP net sales in the September 2014 quarter. However, in the June 2014 quarter there was a difference in the GAAP and non-GAAP net sales from our acquisition of Supertex of $2.5 million as GAAP does not recognize revenue on the sell through of product sitting in the distribution channel on the date an acquisition occurs but Microchip includes this in its non-GAAP results. There will be no conference call in conjunction with this press release."))).appendTo($("#news-description"));
-            });
-            
         }
     });
 }
