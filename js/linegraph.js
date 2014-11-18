@@ -66,7 +66,6 @@ function showNewsForCurrentlySelected(){
     $("#news-list").children().each(function(){
         if($(this).hasClass("active")){
             // populate this news onto news-description
-
             $(".trendlines").remove();
             $(".x.annotation.top").remove();
             var dateParts = $(this).attr("date").split("-");
@@ -205,7 +204,7 @@ function move(coords) {
 // this part here is to do the toggle
 function updateData(inputval) {
 
-    if(inputval===1){
+    if(inputval===1){ // candlestick
 
         // remove first
         svg.selectAll(".close").remove();
@@ -235,7 +234,7 @@ function updateData(inputval) {
                 .call(candlestick);
         });
 
-    }else{
+    }else{ // line chart
 
         // remove first
         svg.selectAll(".candlestick").remove();
