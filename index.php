@@ -104,7 +104,7 @@
         <font id="companyName" size="4" color="black">Company Name</font>
         <font size="3" color="gray"> - </font>
         <font id="companySymbol" size="4" color="gray">Company symbol</font><br>
-        <font id="companyValue" size="6" color="black">348.48 </font>
+        <font id="companyValue" size="6" color="#606060">348.48</font>
         <img src="./img/blueArrow.png" id="postiveIcon" style="width:12px;height:13px"/>
         <img src="./img/orangeArrow.png" id="negativeIcon" style="width:12px;height:13px"/>
         <font id="growthVal" size="4"></font>
