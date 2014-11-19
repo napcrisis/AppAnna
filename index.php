@@ -75,17 +75,19 @@
     <div id="body"></div>
     <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
     <div id="popupElementDiv">
-        <div class="row">
-            <div class="row col-md-9" style="padding-left:50px;">
-                <div class="row" id="companydisplayinfo"></div>
-                <div class="row" id="linebody"></div>
-                <div class="row" id="linecontrols" style="margin-left:30px;">
+        <div class="row" style="padding-left:50px;">
+            <div class="row col-md-12">
+                <div class="row col-md-11" id="companydisplayinfo"></div>    
+                <a class="b-close col-md-1" style="text-align:right;"><img src="./img/cross.png" height="20"/> close</a>
+            </div>
+            <div class="row col-md-9">
+                <div class="row col-md-12" id="linebody"></div>
+                <div class="row col-md-12" id="linecontrols" style="margin-left:30px;">
                     <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
                     <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick
                 </div>
             </div>
             <div class="row col-md-3" style="margin-right:0px;">
-                <a class="b-close row col-md-12" style="text-align:right; margin-bottom:20px;margin-right:0px;"><img src="./img/cross.png" height="20"/> close</a>
                 <ul class="list-group row col-md-12" id="news-list"></ul>    
             </div>            
         </div>
