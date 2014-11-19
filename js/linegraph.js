@@ -72,13 +72,13 @@ function populateNews(d){
     updateNews(d.name);
 }
 function drawVerticalTrendLine(){
+    $(".trendlines").remove();
+    $(".x.annotation.top").remove();
     $("#news-list").children().each(function(){
-        $(".trendlines").remove();
-        $(".x.annotation.top").remove();
         if($(this).hasClass("active")){
             // populate this news onto news-description
             var dateParts = $(this).attr("date").split("-");
-            var newsDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            var newsDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
             var trendlineData = [
                 { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
             ];
@@ -197,9 +197,9 @@ function initLineGraph(){
             .attr("class", "candlestick")
             .attr("clip-path", "url(#clip)");
     // LINE REMOVE
-    svg.append("g")
-            .attr("class", "close")
-            .attr("clip-path", "url(#clip)");
+    // svg.append("g")
+    //         .attr("class", "close")
+    //         .attr("clip-path", "url(#clip)");
 
     svg.append("g")
             .attr("class", "x axis")
@@ -277,18 +277,6 @@ function mousemove(){
                   "translate(" + x(d.date) + "," +
                                  y(d.close) + ")")
             .text(d.close);
-
-        svg.select("text.y3")
-            .attr("transform",
-                  "translate(" + x(d.date) + "," +
-                                 y(d.close) + ")")
-            .text(formatDate(d.date));
-
-        svg.select("text.y4")
-            .attr("transform",
-                  "translate(" + x(d.date) + "," +
-                                 y(d.close) + ")")
-            .text(formatDate(d.date));
 
         svg.select(".x")
             .attr("transform",
