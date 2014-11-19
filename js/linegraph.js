@@ -165,15 +165,38 @@ function initLineGraph(){
             .attr("y", y(1))
             .attr("width", width)
             .attr("height", y(0) - y(1));
+// append the x line
+    svg.append("line")
+        .attr("class", "x")
+        .style("stroke", "blue")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", height);
 
+    // append the y line
+    svg.append("line")
+        .attr("class", "y")
+        .style("stroke", "blue")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("x1", width)
+        .attr("x2", width);
+
+    // append the circle at the intersection
+    svg.append("circle")
+        .attr("class", "y")
+        .style("fill", "none")
+        .style("stroke", "blue")
+        .attr("r", 4);
     svg.append("g")
             .attr("class", "volume")
             .attr("clip-path", "url(#clip)");
-
+    // CHART REMOVE
     svg.append("g")
             .attr("class", "candlestick")
             .attr("clip-path", "url(#clip)");
-    
+    // LINE REMOVE
     svg.append("g")
             .attr("class", "close")
             .attr("clip-path", "url(#clip)");
@@ -199,6 +222,7 @@ function initLineGraph(){
             .attr("width", width)
             .attr("height", height)
             .on("mousemove", mousemove)
+            .on("mouseout", hidecoords)
             .call(zoom);
     ohlcAnnotation = techan.plot.axisannotation()
             .axis(yAxis)
@@ -237,6 +261,49 @@ function mousemove(){
         + ohlcAnnotation.format()(d.high) + " L:" 
         + ohlcAnnotation.format()(d.low) + " C:" 
         + ohlcAnnotation.format()(d.close)).style("font-weight","bold");
+        svg.select("circle.y")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")");
+
+        svg.select("text.y1")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")")
+            .text(d.close);
+
+        svg.select("text.y2")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")")
+            .text(d.close);
+
+        svg.select("text.y3")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")")
+            .text(formatDate(d.date));
+
+        svg.select("text.y4")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")")
+            .text(formatDate(d.date));
+
+        svg.select(".x")
+            .attr("transform",
+                  "translate(" + x(d.date) + "," +
+                                 y(d.close) + ")")
+                       .attr("y2", height - y(d.close));
+
+        svg.select(".y")
+            .attr("transform",
+                  "translate(" + width * -1 + "," +
+                                 y(d.close) + ")")
+                       .attr("x2", width + width);
+}
+function hidecoords(){
+    coordsText.text("");
 }
 function enter() {
     coordsText.style("display", "inline");
