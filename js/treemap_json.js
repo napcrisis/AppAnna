@@ -9,6 +9,7 @@ var transitionDuration = 500;
 var root;
 var node;
 var color = d3.scale.category10();
+var sizeBy = 0;
 
 var selectedCompany; // LINKAGE TO LINEGRAPH
 
@@ -34,6 +35,7 @@ var treemap = d3.layout.treemap()
       }
       return a.volume-b.volume;
     });
+
 var chart = d3.select("#body")
     .append("svg:svg")
     .attr("width", chartWidth)
@@ -322,23 +324,36 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
     childrenCells.exit()
         .remove();
 
-    d3.select("select").on("change", function() {
-        treemap.value(this.value == "size" ? size : count)
+	//this section is for changing how the cells are sized
+    d3.select("#cellsizecap").on("click", function() { //if market cap is selected
+        console.log("entering change function");
+		treemap.value(this.value == "volume" ? size : count)
             .nodes(root);
         zoom(node);
-    });
-
+	});
+	
+	d3.select("#cellsizevol").on("click", function() { //if volume is selected
+        console.log("entering change function");
+		treemap.value(this.value == "volume" ? size : count)
+            .nodes(root);
+        zoom(node);
+	});
+	
     zoom(node);
 });
 
-
 function size(d) {
-    return d.volume;
+	if (sizeBy ==0) { //if default or volume is selected
+		return d.volume;
+	}else{ //if market cap is selected
+		return d.adjclose;
+	}
 }
 
 
 function count(d) {
-    return 1;
+    //return 1;
+	return d.adjclose;
 }
 
 
@@ -444,4 +459,16 @@ function zoom(d) {
     if (d3.event) {
         d3.event.stopPropagation();
     }
+}
+
+function updateTreemap(val) {
+	//for changing size of treemap. 0 for volume, 1 for market cap
+	console.log("updateTreemap function");
+	if(val==0) {
+		sizeBy = 0;
+	}else if(val==1) {
+		sizeBy = 1;
+	}else {
+		sizeBy = 0;
+	}
 }
