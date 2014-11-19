@@ -66,6 +66,12 @@ path.candle.down {
     stroke-dasharray: 2, 2;
 }
 path.volume {
-    fill: #DDDDDD;
+    fill: #AAAAAA;
     opacity: 0.9;
+}
+    
+rect.pane {
+	cursor: crosshair;
+	fill: none;
+	pointer-events: all;
 }
