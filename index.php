@@ -30,6 +30,7 @@
 	<link rel="stylesheet" type="text/css" href="./css/search.css">
 </head>
 <body>
+    <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
     <div>
         <img src="img/appannalogo.png" style="float:left;" height="70"/>
 
@@ -80,7 +81,7 @@
 		
     </div>
     <div id="body"></div>
-    <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
+    
     <div id="popupElementDiv">
         <a class="b-close"  style="float:right; margin:10px;" ><img src="./img/cross.png"height="20"/></a>
         <div class="row" style="padding-left:30px;">
