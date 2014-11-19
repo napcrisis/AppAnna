@@ -1,12 +1,6 @@
 #news-list{
+	max-height:550px;
 	overflow-y: scroll;
 	cursor: pointer;
-	margin-left: 40px;
-	margin-top:20px;
-	height: 300px;  
-}
-#news-description{
-	overflow-y: scroll;
-	margin-top:20px;
-	height: 300px;  
+	width:350px;
 }

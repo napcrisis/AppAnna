@@ -103,7 +103,10 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 	}
 
 	var colorScale = d3.scale.ordinal()
-		.range(["#D35400","#F9690E","#F2784B","#EB974E","#FDE3A7","#6BB9F0","#3498DB","#4183D7","#3A539B"])
+    .range(["#e04810","#f06633","#f48a63","#f7ae92","#BEBEBE","#adcafb","#75a6f8","#508df6","#1869f3"])
+        // .range(["#e04810","#f06633","#f48a63","#f7ae92","#BEBEBE","#a7c8a7","#78ab78","#5c945c","#528452"]) green pale
+        // .range(["#D35400","#F9690E","#F2784B","#eb974e","#BEBEBE","#77AAFF","#5588FF","#3B5998","#272D70"]) good
+		// .range(["#D35400","#F9690E","#F2784B","#EB974E","#FDE3A7","#6BB9F0","#3498DB","#4183D7","#3A539B"])
 		.domain([1,2,3,4,5,6,7,8,9]);
 	
     // create parent cells
@@ -358,7 +361,6 @@ function zoom(d) {
     this.treemap
         .padding([headerHeight/(chartHeight/d.dy), 0, 0, 0])
         .nodes(d);
-
     // moving the next two lines above treemap layout messes up padding of zoom result
     var kx = chartWidth  / d.dx;
     var ky = chartHeight / d.dy;

@@ -44,7 +44,10 @@ path.candle.down {
 .y.annotation.right path {
     fill: #FF0000;
 }
-
+.crosshair .axisannotation {
+    fill: #DDDDDD;
+    display:none;
+ }
 .x.annotation path {
     fill: #FF0000;
 }
@@ -58,15 +61,11 @@ path.candle.down {
     stroke-dasharray: 1, 1;
 }
 
-.crosshair .axisannotation path {
-    fill: #DDDDDD;
-}
-
 .trendline {
     stroke: #FF0000;
     stroke-dasharray: 2, 2;
 }
 path.volume {
     fill: #DDDDDD;
-    opacity: 0.8;
+    opacity: 0.9;
 }

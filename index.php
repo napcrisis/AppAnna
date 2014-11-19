@@ -75,35 +75,21 @@
     <div id="body"></div>
     <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
     <div id="popupElementDiv">
-        <a class="b-close"><img src="./img/cross.png" height="20" style="margin:5px;"/></a>
-        <div id="linebody"></div>
-        <div style="margin-left:30px;">
-            <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
-            <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick
-            Date Range:
-            <div class="btn-group btn-group-xs" role="group">
-                <div class="btn-group" role="group">
-                    <a href="./index.php?daterange=1"><button type="button" class="btn btn-default" style="text-align:center;" >1d</button></a>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="./index.php?daterange=7"><button type="button" class="btn btn-default" style="text-align:center;" >7d</button></a>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="./index.php?daterange=28"><button type="button" class="btn btn-default" style="text-align:center;" >1m</button></a>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="./index.php?daterange=182"><button type="button" class="btn btn-default" style="text-align:center;" >6m</button></a>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="./index.php?daterange=364"><button type="button" class="btn btn-default" style="text-align:center;" >1y</button></a>
-                </div>
-            </div>
-        </div>
         <div class="row">
-            <ul class="list-group col-md-5" id="news-list"></ul>
-            <div class="col-md-6" id="news-description">
+            <div class="row col-md-9" style="padding-left:50px;">
+                <div class="row" id="companydisplayinfo"></div>
+                <div class="row" id="linebody"></div>
+                <div class="row" id="linecontrols" style="margin-left:30px;">
+                    <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
+                    <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick
+                </div>
             </div>
+            <div class="row col-md-3" style="margin-right:0px;">
+                <a class="b-close row col-md-12" style="text-align:right; margin-bottom:20px;margin-right:0px;"><img src="./img/cross.png" height="20"/> close</a>
+                <ul class="list-group row col-md-12" id="news-list"></ul>    
+            </div>            
         </div>
+            
     </div>
     <div id="companyInfo">
         <font id="companyName" size="4" color="black">Company Name</font>

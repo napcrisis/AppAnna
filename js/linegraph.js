@@ -1,6 +1,8 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
-        width = 920 - margin.left - margin.right,
-        height = 360 - margin.top - margin.bottom;
+        width = 900 - margin.left - margin.right,
+        height = 550 - margin.top - margin.bottom;
+
+var overallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
 var trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
@@ -31,6 +33,7 @@ function htmlEncode(value){
 function configPopup(d){
     $("#popupElementDiv").css({'height': $( window ).height()+'px'});
     $("#linebody").empty();
+    $("#companydisplayinfo").empty();
     var companyInfo = $("#companyInfo")
         .clone()
         .show();
@@ -55,7 +58,7 @@ function configPopup(d){
         companyInfo.find('#negativeIcon').hide();
     }
 
-    $("#linebody").append(companyInfo);
+    $("#companydisplayinfo").append(companyInfo);
     $('#defaultGraphType').prop('checked', true);
 }
 function mysqlStupidDateFormat(yyddmm){
@@ -190,9 +193,20 @@ function out() {
 
 // this part reflects the top right hand corner value
 function move(coords) {
-    coordsText.text(
-        timeAnnotation.format()(coords[0][0]) + ", " + ohlcAnnotation.format()(coords[1][0])
-    );
+    
+    for(var i=0;i<overallData.length;i++){
+        if(timeAnnotation.format()(overallData[i].date)===timeAnnotation.format()(coords[0][0])){
+            coordsText.text(
+                timeAnnotation.format()(coords[0][0]) 
+                + ", " + ohlcAnnotation.format()(overallData[i].open)
+                + ", " + ohlcAnnotation.format()(overallData[i].high)
+                + ", " + ohlcAnnotation.format()(overallData[i].low)
+                + ", " + ohlcAnnotation.format()(overallData[i].close)
+            );
+        }
+
+    }
+    
 }
 
 // this part here is to do the toggle
@@ -275,6 +289,8 @@ function makeLineGraph(){
                 volume: +d.Volume
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+
+        overallData=data;
 
         x.domain(data.map(accessor.d));
         y.domain(techan.scale.plot.volume(data, accessor.v).domain());
