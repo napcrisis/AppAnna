@@ -59,7 +59,14 @@ function traverse(p) {
       return [min,max];
     }
     return [p.percentage,p.percentage];
-}       
+}      
+
+function getCurrentDate(data) {
+	if(data.children){ // has children
+      return data.children[0].children[0].date;
+    }
+    return "";
+}        
 
 d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dateRange, function(data) {
     node = root = data;
@@ -72,10 +79,16 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
         return d.children;
     });
     var minMax = traverse(data);
+	var currentDate = getCurrentDate(data);
+	
+	//make legend
 	var minLegendText = d3.round(minMax[0],2);
     var maxLegendText = d3.round(minMax[1],2);
     d3.select("#minlegend").append("span").html(minLegendText);
     d3.select("#maxlegend").append("span").html(maxLegendText);
+	
+	//print out current date
+	d3.select("#currentdate").append("span").html("<i>"+currentDate+"</i>");
 	
 	//get colour of the node
 	var negSects = (0-minMax[0])/4;
@@ -225,9 +238,9 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 			var textToPrint = "";
 
 			if(d.netChange > 0 ){
-				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + d.adjclose + "</b></font>   <i>"+ d.date + "</i><br>Net Change: <font color='green'><b>" + d3.round(d.netChange,2) + "  " + d3.round(d.percentage,2) + "%</b></font><br>Volume: " + vol_format(d.volume) + "<br><i>(Click for more details)</i>";
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font><br>Net Change: <img src='./img/blueArrow.png' style='width:12px;height:13px'> <font color='#1869f3'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) +"%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			} else {
-				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + d.adjclose + "</b></font>   <i>"+ d.date + "</i><br>Net Change: <font color='red'><b>" + d3.round(d.netChange,2) + "  " + d3.round(d.percentage,2) + "%</b></font><br>Volume: " + vol_format(d.volume) + "<br><i>(Click for more details)</i>";
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <img src='./img/orangeArrow.png' style='width:12px;height:13px'> <font color='#e04810'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			}
 			
 			//this section flips the tooltip if it's nearing the edge

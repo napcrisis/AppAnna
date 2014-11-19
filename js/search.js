@@ -45,7 +45,7 @@ function createTooltip(position,symbol,company,adjclose,date,netChange,percentag
 	if(xpos2 >= chartWidth - 230) {
 		xpos2 = position.left - 230;
 	}
-	var ypos2 = position.top;
+	var ypos2 = position.top-120;
 	if(ypos2 >= chartHeight - 130) {
 		ypos2 = position.top - 130;
 	}
