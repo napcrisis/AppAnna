@@ -126,7 +126,7 @@ function updateNews(stock){
         updateNewsList();
     });
 }
-function initLineGraph(){
+function initLineGraph(inputval){
     bisectDate = d3.bisector(function(d) { return d.date; }).left;
     x = techan.scale.financetime()
             .range([0, width]);
@@ -192,14 +192,19 @@ function initLineGraph(){
     svg.append("g")
             .attr("class", "volume")
             .attr("clip-path", "url(#clip)");
-    // CHART REMOVE
-    svg.append("g")
-            .attr("class", "candlestick")
-            .attr("clip-path", "url(#clip)");
-    // LINE REMOVE
-    svg.append("g")
-            .attr("class", "close")
-            .attr("clip-path", "url(#clip)");
+    
+	if(inputval===0){
+		// LINE REMOVE
+		svg.append("g")
+				.attr("class", "close")
+				.attr("clip-path", "url(#clip)");
+	
+	}else{
+		// CHART REMOVE
+		svg.append("g")
+				.attr("class", "candlestick")
+				.attr("clip-path", "url(#clip)");
+	}
 
     svg.append("g")
             .attr("class", "x axis")
@@ -315,6 +320,18 @@ function out() {
 
 // this part reflects the top right hand corner value
 function move(coords) {
+}
+
+
+// this part here is to do the toggle
+function updateData(inputval) {
+	// remove first
+    $("#linebody").empty();
+	svg.selectAll("*").remove();
+	//svg.selectAll(".close").remove();
+	//svg.selectAll(".candlestick").remove();
+	initLineGraph(inputval);
+	makeLineGraph();
 }
 
 /*
