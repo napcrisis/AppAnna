@@ -65,6 +65,7 @@
                     <a href="./index.php?daterange=364"><button type="button" class="btn btn-default" style="text-align:center;" <?php if(isset($_GET["daterange"]) && $_GET["daterange"]==364){echo "disabled";} ?>>1y</button></a>
                 </div>
             </div>
+			<br><span id="currentdate" style="float:right; margin:0; color: #808080"><i>Current date: </i></span>
         </div>
 		
 		<div id="companysearch" class="footer">
