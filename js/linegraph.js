@@ -6,7 +6,7 @@ var margin = {top: 20, right: 50, bottom: 30, left: 50},
 var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 
 var maxClose = -1;
 var minClose = -1;
@@ -127,6 +127,7 @@ function updateNews(stock){
     });
 }
 function initLineGraph(){
+    bisectDate = d3.bisector(function(d) { return d.date; }).left;
     x = techan.scale.financetime()
             .range([0, width]);
     y = d3.scale.linear()
@@ -197,6 +198,7 @@ function initLineGraph(){
             .attr("class", "pane")
             .attr("width", width)
             .attr("height", height)
+            .on("mousemove", mousemove)
             .call(zoom);
     ohlcAnnotation = techan.plot.axisannotation()
             .axis(yAxis)
@@ -220,9 +222,22 @@ function initLineGraph(){
             .attr("y", 15);
     trendline = techan.plot.trendline()
             .xScale(x)
-            .yScale(y);
+            .yScale(y);            
 }
+function mousemove(){
+    var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(OverallData, x0, 1),
+            d0 = OverallData[i - 1],
+            d1 = OverallData[i],
+            d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
+    coordsText.text( 
+        timeAnnotation.format()(d.date) + " O:" 
+        + ohlcAnnotation.format()(d.open) + " H:" 
+        + ohlcAnnotation.format()(d.high) + " L:" 
+        + ohlcAnnotation.format()(d.low) + " C:" 
+        + ohlcAnnotation.format()(d.close)).style("font-weight","bold");
+}
 function enter() {
     coordsText.style("display", "inline");
 }
@@ -233,19 +248,6 @@ function out() {
 
 // this part reflects the top right hand corner value
 function move(coords) {
-	console.log(123565);
-    for (i = 0; i < OverallData.length; i++) { 
-            if(timeAnnotation.format()(OverallData[i].date)===timeAnnotation.format()(coords[0][0])){
-                break;
-            }
-        }
-	coordsText.text(
-		timeAnnotation.format()(coords[0][0]) + ", " 
-		+ ohlcAnnotation.format()(OverallData[i].open) + ", " 
-		+ ohlcAnnotation.format()(OverallData[i].high) + ", " 
-		+ ohlcAnnotation.format()(OverallData[i].low) + ", " 
-		+ ohlcAnnotation.format()(OverallData[i].close)
-	);
 }
 
 /*
