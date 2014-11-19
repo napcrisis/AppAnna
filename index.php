@@ -88,7 +88,7 @@
             <div class="row col-md-12" style=" margin:10px;">
                 <div class="row" id="companydisplayinfo"></div>    
             </div>
-            <div class="row col-md-9">
+            <div class="row col-md-8" style="margin-right:20px;">
                 <div class="row col-md-12" id="linebody"></div>
                 <div class="row col-md-12" id="linecontrols" style="margin-left:30px;">
                     <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
