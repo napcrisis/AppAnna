@@ -1,11 +1,12 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
         width = $(window).width()/2+10 - margin.left - margin.right,
         height = $(window).height()-300 - margin.top - margin.bottom;
+        volumeHeight = height*.5;
 
-var overallData;
+var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+var yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 
 var maxClose = -1;
 var minClose = -1;
@@ -130,13 +131,14 @@ function initLineGraph(){
             .range([0, width]);
     y = d3.scale.linear()
             .range([height, 0]);
+	yVolume = d3.scale.linear()
+            .range([height, height - volumeHeight]);
     volume = techan.plot.volume()
             .accessor(techan.accessor.ohlc()) // For volume bar highlighting
             .xScale(x)
-            .yScale(y);
-    trendline = techan.plot.trendline()
-            .xScale(x)
-            .yScale(y);
+            .yScale(yVolume);
+	zoom = d3.behavior.zoom()
+            .on("zoom", draw);
     candlestick = techan.plot.candlestick()
             .xScale(x)
             .yScale(y);
@@ -146,50 +148,80 @@ function initLineGraph(){
     xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
-    xTopAxis= d3.svg.axis()
-            .scale(x)
-            .orient("top");
     yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
-    yRightAxis = d3.svg.axis()
-            .scale(y)
-            .orient("right");
-    ohlcAnnotation = techan.plot.axisannotation()
-            .axis(yAxis)
-            .format(d3.format(',.2fs'));
-
-    ohlcRightAnnotation = techan.plot.axisannotation()
-            .axis(yRightAxis)
-            .translate([width, 0])
-            .format(d3.format(',.2fs'));
-    timeAnnotation = techan.plot.axisannotation()
-            .axis(xAxis)
-            .format(d3.time.format('%d-%b-%Y'))
-            .width(65)
-            .translate([0, height]);
-    timeTopAnnotation = techan.plot.axisannotation()
-            .axis(xTopAxis);
-
-
     svg = d3.select("#linebody").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+    svg.append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", y(1))
+            .attr("width", width)
+            .attr("height", y(0) - y(1));
 
-    coordsText = svg.append('text')
+    svg.append("g")
+            .attr("class", "volume")
+            .attr("clip-path", "url(#clip)");
+
+    svg.append("g")
+            .attr("class", "candlestick")
+            .attr("clip-path", "url(#clip)");
+    
+    svg.append("g")
+            .attr("class", "close")
+            .attr("clip-path", "url(#clip)");
+
+    svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")");
+
+    svg.append("g")
+            .attr("class", "y axis")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .attr("class", "coords")
-            .attr("x", width - 5)
-            .attr("y", 15);
+            .text("Price ($)");
+    
+    svg.append("g")
+                .attr("class", "volume axis");
+
+    svg.append("rect")
+            .attr("class", "pane")
+            .attr("width", width)
+            .attr("height", height)
+            .call(zoom);
+    ohlcAnnotation = techan.plot.axisannotation()
+            .axis(yAxis)
+            .format(d3.format(',.2fs'));
+
+    timeAnnotation = techan.plot.axisannotation()
+            .axis(xAxis)
+            .format(d3.time.format('%d-%b-%Y'))
+            .width(65)
+            .translate([0, height]);
     crosshair = techan.plot.crosshair()
         .xAnnotation([timeAnnotation, timeTopAnnotation])
         .yAnnotation([ohlcAnnotation, ohlcRightAnnotation])
         .on("enter", enter)
         .on("out", out)
         .on("move", move);
-    }
+    coordsText = svg.append('text')
+            .style("text-anchor", "end")
+            .attr("class", "coords")
+            .attr("x", width - 5)
+            .attr("y", 15);
+    trendline = techan.plot.trendline()
+            .xScale(x)
+            .yScale(y);
+}
 
 function enter() {
     coordsText.style("display", "inline");
@@ -201,22 +233,22 @@ function out() {
 
 // this part reflects the top right hand corner value
 function move(coords) {
-    
-    for(var i=0;i<overallData.length;i++){
-        if(timeAnnotation.format()(overallData[i].date)===timeAnnotation.format()(coords[0][0])){
-            coordsText.text(
-                timeAnnotation.format()(coords[0][0]) 
-                + ", " + ohlcAnnotation.format()(overallData[i].open)
-                + ", " + ohlcAnnotation.format()(overallData[i].high)
-                + ", " + ohlcAnnotation.format()(overallData[i].low)
-                + ", " + ohlcAnnotation.format()(overallData[i].close)
-            );
+	console.log(123565);
+    for (i = 0; i < OverallData.length; i++) { 
+            if(timeAnnotation.format()(OverallData[i].date)===timeAnnotation.format()(coords[0][0])){
+                break;
+            }
         }
-
-    }
-    
+	coordsText.text(
+		timeAnnotation.format()(coords[0][0]) + ", " 
+		+ ohlcAnnotation.format()(OverallData[i].open) + ", " 
+		+ ohlcAnnotation.format()(OverallData[i].high) + ", " 
+		+ ohlcAnnotation.format()(OverallData[i].low) + ", " 
+		+ ohlcAnnotation.format()(OverallData[i].close)
+	);
 }
 
+/*
 // this part here is to do the toggle
 function updateData(inputval) {
 
@@ -283,8 +315,59 @@ function updateData(inputval) {
 
     }
 }
+*/
+function draw() {
+	svg.select("g.candlestick").call(candlestick);
+	svg.select("g.close").call(close);
+	svg.select("g.x.axis").call(xAxis);
+	svg.select("g.y.axis").call(yAxis);
+
+	// We know the data does not change, a simple refresh that does not perform data joins will suffice.
+	//svg.select("g.candlestick").call(candlestick.refresh);
+	svg.select("g.volume").call(volume.refresh);
+	svg.select("g.crosshair").call(crosshair);
+	/*
+	svg.select("g.sma.ma-0").call(sma0.refresh);
+	svg.select("g.sma.ma-1").call(sma1.refresh);
+	svg.select("g.ema.ma-2").call(ema2.refresh);
+	*/
+}
 function makeLineGraph(){
-    d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
+	d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
+		var accessor = candlestick.accessor();
+
+        data = data.map(function(d) {
+            return {
+                date: parseDate(d.Date),
+                open: +d.Open,
+                high: +d.High,
+                low: +d.Low,
+                close: +d.Close,
+                volume: +d.Volume
+            };
+        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+
+        OverallData=data;
+
+        x.domain(data.map(accessor.d));
+        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+        yVolume.domain(techan.scale.plot.volume(data, accessor.v).domain());
+        
+        svg.select("g.close").datum(data).call(close);
+        svg.select("g.candlestick").datum(data).call(candlestick);
+        svg.select("g.volume").datum(data).call(volume);
+        svg.select("g.crosshair").call(crosshair);
+		draw();
+        
+        // Associate the zoom with the scale after a domain has been applied
+        zoom.x(x.zoomable()).y(y);
+    });
+	
+	
+	
+	
+	/*
+	d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
         var accessor = volume.accessor();
 
         data = data.map(function(d) {
@@ -298,7 +381,7 @@ function makeLineGraph(){
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
-        overallData=data;
+        OverallData=data;
 
         x.domain(data.map(accessor.d));
         y.domain(techan.scale.plot.volume(data, accessor.v).domain());
@@ -388,7 +471,7 @@ function makeLineGraph(){
                 .attr("class", "crosshair")
                 .call(crosshair);
     });
-
+	*/
 }
 
     

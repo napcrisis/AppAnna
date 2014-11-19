@@ -73,6 +73,12 @@
 			<input name="search" id="search" type="text" size="40" placeholder="Search for Company" />
 		</div>
 		
+		<div id="cellsizediv" class="footer">
+			Size by:
+			<input type="radio" name="cellsize" id="cellsizevol" value="volume" checked>Transacted Volume
+             <input type="radio" name="cellsize" id="cellsizecap" value="marketcap">Market Cap
+		</div>
+		
     </div>
     <div id="body"></div>
     
