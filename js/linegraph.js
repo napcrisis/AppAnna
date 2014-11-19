@@ -1,6 +1,6 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
-        width = 900 - margin.left - margin.right,
-        height = 550 - margin.top - margin.bottom;
+        width = $(window).width()/2+10 - margin.left - margin.right,
+        height = $(window).height()-300 - margin.top - margin.bottom;
 
 var overallData;
 
@@ -10,7 +10,7 @@ var trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRight
 var maxClose = -1;
 var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-var megatitleitem=$("<small/>"), titleitem=$("<b/>").addClass("list-group-item-heading"), 
+var titleitem=$("<b/>").addClass("list-group-item-heading"), 
 newslistitem = $("<li/>").addClass("list-group-item").click(function(){
     if($(this).hasClass("active")){
         $(this).removeClass("active");
@@ -18,11 +18,11 @@ newslistitem = $("<li/>").addClass("list-group-item").click(function(){
         $(this).addClass("active");
     }
     drawVerticalTrendLine();
-}), newslink = $("<p/>").text("link").attr("target","_blank").click(function(){
-    window.open($(this).attr("url"),'Anna News',width=600,height=300);
-}),
+}), newslink = $("<a/>").attr("target","_blank").attr("style","color:black;").text("Link ").click(function(){
+    window.open($(this).attr("url"),'Anna News',600,300);
+}), icon=$("<span/>").attr("style","color:black;").addClass("glyphicon glyphicon-globe").appendTo(newslink), marked=$("<span/>").addClass("marker").attr("style","float:right;"),
 descriptionitem = $("<p/>").addClass("list-group-item-text"), 
-smalldate=$("<small/>");;
+smalldate=$("<small/>").attr("style","float:right; margin-left:5px;");
 
 function htmlDecode(value){
   return $('<div/>').html(value).text();
@@ -31,10 +31,11 @@ function htmlEncode(value){
   return $('<div/>').text(value).html();
 }
 function configPopup(d){
-    $("#popupElementDiv").css({'height': $( window ).height()-100+'px'});
-    $("#popupElementDiv").css({'margin': 50+'px'});
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
+
+    width = chartWidth/2+30;
+    height = chartHeight-250;
     var companyInfo = $("#companyInfo")
         .clone()
         .show();
@@ -71,10 +72,10 @@ function populateNews(d){
 }
 function drawVerticalTrendLine(){
     $("#news-list").children().each(function(){
+        $(".trendlines").remove();
+        $(".x.annotation.top").remove();
         if($(this).hasClass("active")){
             // populate this news onto news-description
-            $(".trendlines").remove();
-            $(".x.annotation.top").remove();
             var dateParts = $(this).attr("date").split("-");
             var newsDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
             var trendlineData = [
@@ -90,6 +91,9 @@ function drawVerticalTrendLine(){
                 .attr("class", "x annotation top")
                 .datum([{value: newsDate}])
                 .call(timeAnnotation);
+            $(this).find(".marker").first().removeClass("glyphicon glyphicon-pushpin");
+        } else {
+            $(this).find(".marker").first().addClass("glyphicon glyphicon-pushpin");
         }
     });
 }
@@ -100,11 +104,14 @@ function updateNewsList(){
             var news = newsdata[i];
             var newsitemcontainer = newslistitem.clone(true);
             var newsheader = titleitem.clone(true).text(htmlDecode(news.headline)+" ");
+            var marker = marked.clone(true);
             newsheader.appendTo(newsitemcontainer);
             descriptionitem.clone(true).text(htmlDecode(news.description)).appendTo(newsitemcontainer);
             newsitemcontainer.attr("date",news.date);
             newsitemcontainer.attr("newsid",news.id);
             newslink.clone(true).attr("url",news.link).appendTo(newsitemcontainer);
+            smalldate.clone(true).text(news.date).appendTo(newsitemcontainer);
+            marker.appendTo(newsitemcontainer);
             newsitemcontainer.appendTo($("#news-list"));
         }
     }
@@ -383,4 +390,5 @@ function makeLineGraph(){
     });
 
 }
+
     
