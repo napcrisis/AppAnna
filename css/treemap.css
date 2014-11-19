@@ -106,7 +106,8 @@ rect {
   color:#000;
   display:none; 
   padding:20px;
-  width:1350px;
+  height:600px;
+  width:1300px;
 }
 .b-close{
   cursor:pointer;

@@ -10,7 +10,7 @@ var trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRight
 var maxClose = -1;
 var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-var megatitleitem=$("<h5/>"), titleitem=$("<b/>").addClass("list-group-item-heading"), 
+var megatitleitem=$("<small/>"), titleitem=$("<b/>").addClass("list-group-item-heading"), 
 newslistitem = $("<li/>").addClass("list-group-item").click(function(){
     if($(this).hasClass("active")){
         $(this).removeClass("active");
@@ -31,7 +31,8 @@ function htmlEncode(value){
   return $('<div/>').text(value).html();
 }
 function configPopup(d){
-    $("#popupElementDiv").css({'height': $( window ).height()+'px'});
+    $("#popupElementDiv").css({'height': $( window ).height()-100+'px'});
+    $("#popupElementDiv").css({'margin': 50+'px'});
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
     var companyInfo = $("#companyInfo")
@@ -42,10 +43,10 @@ function configPopup(d){
     companyInfo.find('#companyValue').text("$"+d.close);
     companyInfo.find('#growthVal')
         .text(d3.round(d.netChange,2))
-        .attr("color",d.netChange>0?"green":d.netChange==0?"grey":"red");
+        .attr("color",d.netChange>0?"#1869f3":d.netChange==0?"#BEBEBE":"#e04810");
     companyInfo.find('#growthPercent')
         .text("("+d3.round(d.percentage,2)+"%)")
-        .attr("color",d.netChange>0?"green":d.netChange==0?"grey":"red");
+        .attr("color",d.netChange>0?"#1869f3":d.netChange==0?"#BEBEBE":"#e04810");
 
     if(d.netChange>0){
         companyInfo.find('#postiveIcon').show();

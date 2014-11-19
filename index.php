@@ -75,10 +75,10 @@
     <div id="body"></div>
     <form></form> <!-- This form tag is required for bpopup if not there will be no overlay-->
     <div id="popupElementDiv">
-        <div class="row" style="padding-left:50px;">
-            <div class="row col-md-12">
-                <div class="row col-md-11" id="companydisplayinfo"></div>    
-                <a class="b-close col-md-1" style="text-align:right;"><img src="./img/cross.png" height="20"/> close</a>
+        <a class="b-close"  style="float:right; margin:10px;" ><img src="./img/cross.png"height="20"/></a>
+        <div class="row" style="padding-left:30px;">
+            <div class="row col-md-12" style=" margin:10px;">
+                <div class="row" id="companydisplayinfo"></div>    
             </div>
             <div class="row col-md-9">
                 <div class="row col-md-12" id="linebody"></div>
