@@ -14,7 +14,6 @@ var sizeBy = 0;
 var selectedCompany; // LINKAGE TO LINEGRAPH
 
 function formatNumber(d) { d3.format(",d");}
-var counter = 0;
 var treemap = d3.layout.treemap()
     .round(false)
     .ratio(chartHeight / chartWidth * 0.5 * (1 + Math.sqrt(5)))
@@ -130,7 +129,8 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
         .append("g")
         .attr("class", "cell parent")
         .on("click", function(d) {
-			zoom(node === d.parent ? d: root);
+            console.log(node === d.parent ? "d": "root");
+			zoomo(node === d.parent ? d: root);
         });
     parentEnterTransition.append("rect")
         .attr("width", function(d) {
@@ -330,16 +330,16 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
     d3.select("#cellsizecap").on("click", function() { //if market cap is selected
 		treemap.value(this.value == "volume" ? size : count)
             .nodes(root);
-        zoom(node);
+        zoomo(node);
 	});
 	
 	d3.select("#cellsizevol").on("click", function() { //if volume is selected
 		treemap.value(this.value == "volume" ? size : count)
             .nodes(root);
-        zoom(node);
+        zoomo(node);
 	});
 	
-    zoom(node);
+    zoomo(node);
 });
 
 function size(d) {
@@ -412,11 +412,12 @@ function idealTextColor (bgColor) {
 }
 
 
-function zoom(d) {
+function zoomo(d) {
+    console.log("zoomo");
     this.treemap
         .padding([headerHeight/(chartHeight/d.dy), 0, 0, 0])
         .nodes(d);
-    // moving the next two lines above treemap layout messes up padding of zoom result
+    // moving the next two lines above treemap layout messes up padding of zoomo result
     var kx = chartWidth  / d.dx;
     var ky = chartHeight / d.dy;
     var level = d;
@@ -434,7 +435,7 @@ function zoom(d) {
         }
     }
 
-    var zoomTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
+    var zoomoTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
         .attr("transform", function(d) {
             return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
         })
@@ -464,7 +465,7 @@ function zoom(d) {
             }
         });
 
-    zoomTransition.select(".foreignObject")
+    zoomoTransition.select(".foreignObject")
         .attr("width", function(d) {
             return Math.max(0.01, kx * d.dx);
         })
@@ -473,7 +474,7 @@ function zoom(d) {
         });
 
     // update the width/height of the rects
-    zoomTransition.select("rect")
+    zoomoTransition.select("rect")
         .attr("width", function(d) {
             return Math.max(0.01, kx * d.dx);
         })
