@@ -326,14 +326,12 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 
 	//this section is for changing how the cells are sized
     d3.select("#cellsizecap").on("click", function() { //if market cap is selected
-        console.log("entering change function");
 		treemap.value(this.value == "volume" ? size : count)
             .nodes(root);
         zoom(node);
 	});
 	
 	d3.select("#cellsizevol").on("click", function() { //if volume is selected
-        console.log("entering change function");
 		treemap.value(this.value == "volume" ? size : count)
             .nodes(root);
         zoom(node);

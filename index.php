@@ -112,7 +112,8 @@
         <font id="growthPercent" size="4"></font>
     </div>
 	
-	<div class="tooltip" id="divt" style="opacity:0"></div>
+	<div class="tooltip" id="divt" style="opacity:0">
+	</div>
 	<!--divt2 is for displaying the result of company search-->
 	<div class="tooltip" id="divt2" style="opacity:0"></div>
 </body>
