@@ -107,9 +107,9 @@
             
     </div>
     <div id="companyInfo">
-		<table> 
+		<table width="100%"> 
 			<tr>
-			<td width = "40%">
+			<td width = "50%">
 				<font id="companyName" size="4" color="black">Company Name</font>
 				<font size="3" color="gray"> - </font>
 				<font id="companySymbol" size="4" color="gray">Company symbol</font><br>
@@ -119,18 +119,17 @@
 				<font id="growthVal" size="4"></font>
 				<font id="growthPercent" size="4"></font>
 			</td>
-			<td width = "30%">
-			<b>Stock summary: </b><br>
-				Volume: <font id="companyVol" size="2"></font><br/>
-				Average Volume (3m): <font id="avgVol" size="2"> </font><br/>
-				Market Cap: <font id="marketcap" size="2"></font><br/>
-				P/E (ttm): <font id="pe" size="2"></font><br/>
+			<td width = "25%">
+				<b>Volume:</b> <font id="companyVol" size="2"></font><br/>
+				<b>Average Volume (3m):</b> <font id="avgVol" size="2"> </font><br/>
+				<b>Market Cap:</b> <font id="marketcap" size="2"></font><br/>
+				<b>P/E (ttm):</b> <font id="pe" size="2"></font><br/>
 			</td>
-			<td width = "30%">
-				Day's Range: <font id="dayrange" size="2"></font><br/>
-				52 Week Range: <font id="yearrange" size="2"></font><br/>
-				EPS (ttm): <font id="eps" size="2"></font><br/>
-				Div & Yield: <font id="divandyield" size="2"></font><br/>
+			<td width = "25%">
+				<b>Day's Range:</b> <font id="dayrange" size="2"></font><br/>
+				<b>52 Week Range:</b> <font id="yearrange" size="2"></font><br/>
+				<b>EPS (ttm):</b> <font id="eps" size="2"></font><br/>
+				<b>Div & Yield:</b> <font id="divandyield" size="2"></font><br/>
 			</td>
 
 			</tr>

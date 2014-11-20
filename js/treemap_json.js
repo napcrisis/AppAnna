@@ -129,7 +129,6 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
         .append("g")
         .attr("class", "cell parent")
         .on("click", function(d) {
-            console.log(node === d.parent ? "d": "root");
 			zoomo(node === d.parent ? d: root);
         });
     parentEnterTransition.append("rect")
@@ -238,13 +237,15 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 			divt.transition().duration(200);     
 			
 			var textToPrint = "";
+			var marketcap = d.marketcap; 
+			
 
 			if(d.netChange > 0 ){
-				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font><br>Net Change: <img src='./img/blueArrow.png' style='width:12px;height:13px'> <font color='#1869f3'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) +"%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font><br>Net Change: <img src='./img/blueArrow.png' style='width:12px;height:13px'> <font color='#1869f3'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) +"%)</b></font><br>Volume: " + vol_format(d.volume) + "<br>Market Cap: " + d.marketcap+"<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			} else if (d.netChange == 0 ){
-				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b><br>Volume: " + vol_format(d.volume) + "<br>Market Cap: " + d.marketcap+"<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			} else {
-				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <img src='./img/orangeArrow.png' style='width:12px;height:13px'> <font color='#e04810'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <img src='./img/orangeArrow.png' style='width:12px;height:13px'> <font color='#e04810'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b></font><br>Volume: " + vol_format(d.volume) + "<br>Market Cap: " + d.marketcap+ "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			}
 			
 			//this section flips the tooltip if it's nearing the edge
@@ -352,15 +353,12 @@ function size(d) {
 		
 		if(marketcap.indexOf("M") != -1) {
 			marketcapno = d3.round(marketcapno,0);
-		}
-		if(marketcap.indexOf("B") != -1) {
-			marketcapno = d3.round(marketcapno*1000000,0);
-		}
-		if(marketcap.indexOf("N/A") != -1 || marketcap.indexOf("N\/A") != -1) {
+		} else if(marketcap.indexOf("B") != -1) {
+			marketcapno = d3.round(marketcapno*1000,0);
+		} else {
 			marketcapno = 0;
 		}
-		console.log(marketcapno);
-		return d.marketcapno;
+		return marketcapno;
 	}
 }
 
@@ -368,19 +366,17 @@ function size(d) {
 function count(d) {
     //return 1;
 	var marketcap = d.marketcap;
+		
 		var marketcapno = marketcap.substring(0, marketcap.length - 2);
 		
 		if(marketcap.indexOf("M") != -1) {
-			marketcapno = d3.round(marketcapno*1000000,0);
-		}
-		if(marketcap.indexOf("B") != -1) {
-			marketcapno = d3.round(marketcapno*1000000000000,0);
-		}
-		if(marketcap.indexOf("N/A") != -1 || marketcap.indexOf("N\/A") != -1) {
+			marketcapno = d3.round(marketcapno,0);
+		} else if(marketcap.indexOf("B") != -1) {
+			marketcapno = d3.round(marketcapno*1000,0);
+		} else {
 			marketcapno = 0;
 		}
-		console.log(marketcapno);
-		return d.marketcapno;
+		return marketcapno;
 }
 
 
@@ -413,7 +409,6 @@ function idealTextColor (bgColor) {
 
 
 function zoomo(d) {
-    console.log("zoomo");
     this.treemap
         .padding([headerHeight/(chartHeight/d.dy), 0, 0, 0])
         .nodes(d);
@@ -491,7 +486,6 @@ function zoomo(d) {
 
 function updateTreemap(val) {
 	//for changing size of treemap. 0 for volume, 1 for market cap
-	console.log("updateTreemap function");
 	if(val==0) {
 		sizeBy = 0;
 	}else if(val==1) {
