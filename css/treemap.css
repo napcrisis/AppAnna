@@ -21,7 +21,9 @@ body {
   font-weight: 200;
   text-shadow: 0 1px 0 #fff;
 }
-
+#companydisplayinfo{
+  height:60px;
+}
 svg {
   overflow: hidden;
 }

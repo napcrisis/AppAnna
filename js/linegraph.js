@@ -65,7 +65,10 @@ function htmlEncode(value){
 function configPopup(d){
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
+
+    // reset news line
     newsLineStack = ["","","","",""];
+
     width = chartWidth/2+30;
     height = chartHeight-250;
     var companyInfo = $("#companyInfo")
