@@ -107,14 +107,35 @@
             
     </div>
     <div id="companyInfo">
-        <font id="companyName" size="4" color="black">Company Name</font>
-        <font size="3" color="gray"> - </font>
-        <font id="companySymbol" size="4" color="gray">Company symbol</font><br>
-        <font id="companyValue" size="6" color="#606060">348.48</font>
-        <img src="./img/blueArrow.png" id="postiveIcon" style="width:12px;height:13px"/>
-        <img src="./img/orangeArrow.png" id="negativeIcon" style="width:12px;height:13px"/>
-        <font id="growthVal" size="4"></font>
-        <font id="growthPercent" size="4"></font>
+		<table> 
+			<tr>
+			<td width = "40%">
+				<font id="companyName" size="4" color="black">Company Name</font>
+				<font size="3" color="gray"> - </font>
+				<font id="companySymbol" size="4" color="gray">Company symbol</font><br>
+				<font id="companyValue" size="6" color="#606060"></font>
+				<img src="./img/blueArrow.png" id="postiveIcon" style="width:12px;height:13px"/>
+				<img src="./img/orangeArrow.png" id="negativeIcon" style="width:12px;height:13px"/>
+				<font id="growthVal" size="4"></font>
+				<font id="growthPercent" size="4"></font>
+			</td>
+			<td width = "30%">
+			<b>Stock summary: </b><br>
+				Volume: <font id="companyVol" size="2"></font><br/>
+				Average Volume (3m): <font id="avgVol" size="2"> </font><br/>
+				Market Cap: <font id="marketcap" size="2"></font><br/>
+				P/E (ttm): <font id="pe" size="2"></font><br/>
+			</td>
+			<td width = "30%">
+				Day's Range: <font id="dayrange" size="2"></font><br/>
+				52 Week Range: <font id="yearrange" size="2"></font><br/>
+				EPS (ttm): <font id="eps" size="2"></font><br/>
+				Div & Yield: <font id="divandyield" size="2"></font><br/>
+			</td>
+
+			</tr>
+			
+		</table>
     </div>
 	
 	<div class="tooltip" id="divt" style="opacity:0">

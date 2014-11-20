@@ -241,6 +241,8 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 
 			if(d.netChange > 0 ){
 				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font><br>Net Change: <img src='./img/blueArrow.png' style='width:12px;height:13px'> <font color='#1869f3'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) +"%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+			} else if (d.netChange == 0 ){
+				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			} else {
 				textToPrint = "<font size='4px'><b>" + d.company + " (" + d.name + ")</b></font>" + "<br><font size='5px' color='#606060'><b>$" + d.adjclose + "</b></font> <br>Net Change: <img src='./img/orangeArrow.png' style='width:12px;height:13px'> <font color='#e04810'><b>" + d3.round(d.netChange,2) + "  (" + d3.round(d.percentage,2) + "%)</b></font><br>Volume: " + vol_format(d.volume) + "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
 			}
@@ -344,14 +346,41 @@ function size(d) {
 	if (sizeBy ==0) { //if default or volume is selected
 		return d.volume;
 	}else{ //if market cap is selected
-		return d.adjclose;
+		var marketcap = d.marketcap;
+		
+		var marketcapno = marketcap.substring(0, marketcap.length - 2);
+		
+		if(marketcap.indexOf("M") != -1) {
+			marketcapno = d3.round(marketcapno,0);
+		}
+		if(marketcap.indexOf("B") != -1) {
+			marketcapno = d3.round(marketcapno*1000000,0);
+		}
+		if(marketcap.indexOf("N/A") != -1 || marketcap.indexOf("N\/A") != -1) {
+			marketcapno = 0;
+		}
+		console.log(marketcapno);
+		return d.marketcapno;
 	}
 }
 
 
 function count(d) {
     //return 1;
-	return d.adjclose;
+	var marketcap = d.marketcap;
+		var marketcapno = marketcap.substring(0, marketcap.length - 2);
+		
+		if(marketcap.indexOf("M") != -1) {
+			marketcapno = d3.round(marketcapno*1000000,0);
+		}
+		if(marketcap.indexOf("B") != -1) {
+			marketcapno = d3.round(marketcapno*1000000000000,0);
+		}
+		if(marketcap.indexOf("N/A") != -1 || marketcap.indexOf("N\/A") != -1) {
+			marketcapno = 0;
+		}
+		console.log(marketcapno);
+		return d.marketcapno;
 }
 
 
