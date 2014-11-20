@@ -70,6 +70,7 @@ function configPopup(d){
 
     // reset news line
     newsLineStack = ["","","","",""];
+    $("#news-list").empty();
 
     width = chartWidth/2+30;
     height = chartHeight-250;
