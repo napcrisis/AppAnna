@@ -96,6 +96,7 @@
                 </div>
             </div>
             <div class="row col-md-3" style="margin-right:0px;">
+                <h3>Related News<br><small id="newsinstruction">Click news to mark on chart</small></h3>
                 <ul class="list-group row col-md-12" id="news-list"></ul>    
             </div>            
         </div>

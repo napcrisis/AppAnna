@@ -8,17 +8,45 @@ var OverallData;
 var parseDate = d3.time.format("%d-%b-%y").parse;
 var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 var evenColor = "#9bfad7", oddColor = "#faa79b", selectedColor = "#9bbffa";
+var colorStack = ["#516b41","#416b5b","#41516b","#6b5b41","#6b4151"];
+var newsLineStack;
 var maxClose = -1;
 var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var titleitem=$("<b/>").addClass("list-group-item-heading"), 
 newslistitem = $("<li/>").addClass("list-group-item").click(function(){
-    if($(this).hasClass("active")){
-        $(this).removeClass("active");
-    } else {
-        $(this).addClass("active");
+    var doIChange = 0;
+    for(var index in newsLineStack){
+        if(newsLineStack[index]!=""){
+            doIChange+=1;
+        }
     }
-    drawVerticalTrendLine();
+    if(doIChange<5 || $(this).hasClass("markedt")){
+        if($(this).hasClass("markedt")){
+            for(var index in newsLineStack){
+                if($(this).attr("date")==newsLineStack[index]){
+                    newsLineStack[index] = "";
+                    break;
+                }
+            }
+            $(this).removeClass("markedt");
+        } else {
+            $(this).addClass("markedt");
+        }
+        drawVerticalTrendLine();
+        var count = 0;
+        // count the number of selected news
+        for(var index in newsLineStack){
+            if(newsLineStack[index]!=""){
+                count+=1;
+            }
+        }
+        if(count==0){
+            $("#newsinstruction").text("Click news to mark date on chart");
+        } else {
+            $("#newsinstruction").text("You can mark "+(newsLineStack.length-count)+" more news");
+        }
+    }
 }), newslink = $("<a/>").attr("target","_blank").attr("style","color:black;").text("Link ").click(function(){
     window.open($(this).attr("url"),'Anna News',600,300);
 }), icon=$("<span/>").attr("style","color:black;").addClass("glyphicon glyphicon-globe").appendTo(newslink), marked=$("<span/>").addClass("marker").attr("style","float:right;"),
@@ -34,7 +62,7 @@ function htmlEncode(value){
 function configPopup(d){
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
-
+    newsLineStack = ["","","","",""];
     width = chartWidth/2+30;
     height = chartHeight-250;
     var companyInfo = $("#companyInfo")
@@ -74,30 +102,53 @@ function populateNews(d){
 function drawVerticalTrendLine(){
     $(".trendlines").remove();
     $(".x.annotation.top").remove();
-    var evenOddCounter = 0;
 
     $("#news-list").children().each(function(){
-        if($(this).hasClass("active")){
-            evenOddCounter+=1;
+        if($(this).hasClass("markedt")){
             // populate this news onto news-description
             var dateParts = $(this).attr("date").split("-");
             var newsDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
-            console.log(minClose);
-            console.log(maxClose);
             var trendlineData = [
                 { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
             ];
-            // this part is where the line is created and added to the chart
-            var color = evenOddCounter%2==1?oddColor:evenColor;
-
-            svg.append("g")
-                .datum(trendlineData)
-                .attr("class", "trendlines")
-                .attr("style", "stroke:"+color+";")
-                .call(trendline);
-            $(this).find(".marker").first().removeClass("glyphicon glyphicon-pushpin");
+            // is it already inside newsLineStack
+            var index = 0, matchedOnIndex=-1;
+            for(var newsLine in newsLineStack){
+                if(newsLineStack[newsLine]==$(this).attr("date")){
+                    matchedOnIndex = index;
+                    break;
+                }
+                index+=1;
+            }
+            console.log(matchedOnIndex);
+            console.log(newsLineStack);
+            // get a color not used
+            if(matchedOnIndex==-1){
+                index = 0;
+                for(var newsLine in newsLineStack){
+                    if(newsLineStack[newsLine]==""){
+                        matchedOnIndex = index;
+                        break;
+                    }
+                    index+=1;
+                }
+            }
+            console.log(matchedOnIndex);
+            // set color
+            if(matchedOnIndex!=-1 && matchedOnIndex<colorStack.length){
+                newsLineStack[matchedOnIndex] = $(this).attr("date");
+                var color = colorStack[matchedOnIndex];
+                svg.append("g")
+                    .datum(trendlineData)
+                    .attr("class", "trendlines")
+                    .attr("style", "stroke:"+color+";")
+                    .call(trendline);
+                $(this).attr("style","color:"+color+";"); 
+            } else {
+                $(this).attr("style","color:black;"); 
+            }
         } else {
-            $(this).find(".marker").first().addClass("glyphicon glyphicon-pushpin");
+            $(this).attr("style","color:black;"); 
         }
     });
 }
@@ -119,8 +170,6 @@ function updateNewsList(){
             newsitemcontainer.appendTo($("#news-list"));
         }
     }
-    $("#news-list").children().first().addClass("active");
-    drawVerticalTrendLine();
 }
 function updateNews(stock){
     var url = "./php_scripts/ajax/query/single_company_news.php?symbol="+stock;
