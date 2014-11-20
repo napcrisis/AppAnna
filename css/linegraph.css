@@ -71,3 +71,15 @@ rect.pane {
 	fill: none;
 	pointer-events: all;
 }
+
+.ma-0 path.line {
+	stroke: #20782e;
+}
+
+.ma-1 path.line {
+	stroke: #407880;
+}
+
+.ma-2 path.line {
+	stroke: #ff7f0e;
+}
