@@ -209,7 +209,7 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
             configPopup(d);
             populateNews(d);
         	selectedCompany = d;
-            initLineGraph(0);
+            initLineGraph();
         	makeLineGraph();
             $('#popupElementDiv').height((chartHeight-30)+"px");
             $('#popupElementDiv').attr("style","margin-top:50px;");

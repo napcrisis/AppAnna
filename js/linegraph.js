@@ -6,19 +6,49 @@ var margin = {top: 20, right: 50, bottom: 30, left: 50},
 var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
+
+var sma0,sma1,ema2,bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+
 var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
-var evenColor = "#9bfad7", oddColor = "#faa79b", selectedColor = "#9bbffa";
+var colorStack = ["#516b41","#416b5b","#41516b","#6b5b41","#6b4151"];
+var newsLineStack;
 var maxClose = -1;
 var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var titleitem=$("<b/>").addClass("list-group-item-heading"), 
 newslistitem = $("<li/>").addClass("list-group-item").click(function(){
-    if($(this).hasClass("active")){
-        $(this).removeClass("active");
-    } else {
-        $(this).addClass("active");
+    var doIChange = 0;
+    for(var index in newsLineStack){
+        if(newsLineStack[index]!=""){
+            doIChange+=1;
+        }
     }
-    drawVerticalTrendLine();
+    if(doIChange<5 || $(this).hasClass("markedt")){
+        if($(this).hasClass("markedt")){
+            for(var index in newsLineStack){
+                if($(this).attr("date")==newsLineStack[index]){
+                    newsLineStack[index] = "";
+                    break;
+                }
+            }
+            $(this).removeClass("markedt");
+        } else {
+            $(this).addClass("markedt");
+        }
+        drawVerticalTrendLine();
+        var count = 0;
+        // count the number of selected news
+        for(var index in newsLineStack){
+            if(newsLineStack[index]!=""){
+                count+=1;
+            }
+        }
+        if(count==0){
+            $("#newsinstruction").text("Click news to mark date on chart");
+        } else {
+            $("#newsinstruction").text("You can mark "+(newsLineStack.length-count)+" more news");
+        }
+    }
 }), newslink = $("<a/>").attr("target","_blank").attr("style","color:black;").text("Link ").click(function(){
     window.open($(this).attr("url"),'Anna News',600,300);
 }), icon=$("<span/>").attr("style","color:black;").addClass("glyphicon glyphicon-globe").appendTo(newslink), marked=$("<span/>").addClass("marker").attr("style","float:right;"),
@@ -34,7 +64,7 @@ function htmlEncode(value){
 function configPopup(d){
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
-
+    newsLineStack = ["","","","",""];
     width = chartWidth/2+30;
     height = chartHeight-250;
     var companyInfo = $("#companyInfo")
@@ -74,30 +104,53 @@ function populateNews(d){
 function drawVerticalTrendLine(){
     $(".trendlines").remove();
     $(".x.annotation.top").remove();
-    var evenOddCounter = 0;
 
     $("#news-list").children().each(function(){
-        if($(this).hasClass("active")){
-            evenOddCounter+=1;
+        if($(this).hasClass("markedt")){
             // populate this news onto news-description
             var dateParts = $(this).attr("date").split("-");
             var newsDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
-            console.log(minClose);
-            console.log(maxClose);
             var trendlineData = [
                 { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
             ];
-            // this part is where the line is created and added to the chart
-            var color = evenOddCounter%2==1?oddColor:evenColor;
-
-            svg.append("g")
-                .datum(trendlineData)
-                .attr("class", "trendlines")
-                .attr("style", "stroke:"+color+";")
-                .call(trendline);
-            $(this).find(".marker").first().removeClass("glyphicon glyphicon-pushpin");
+            // is it already inside newsLineStack
+            var index = 0, matchedOnIndex=-1;
+            for(var newsLine in newsLineStack){
+                if(newsLineStack[newsLine]==$(this).attr("date")){
+                    matchedOnIndex = index;
+                    break;
+                }
+                index+=1;
+            }
+            console.log(matchedOnIndex);
+            console.log(newsLineStack);
+            // get a color not used
+            if(matchedOnIndex==-1){
+                index = 0;
+                for(var newsLine in newsLineStack){
+                    if(newsLineStack[newsLine]==""){
+                        matchedOnIndex = index;
+                        break;
+                    }
+                    index+=1;
+                }
+            }
+            console.log(matchedOnIndex);
+            // set color
+            if(matchedOnIndex!=-1 && matchedOnIndex<colorStack.length){
+                newsLineStack[matchedOnIndex] = $(this).attr("date");
+                var color = colorStack[matchedOnIndex];
+                svg.append("g")
+                    .datum(trendlineData)
+                    .attr("class", "trendlines")
+                    .attr("style", "stroke:"+color+";")
+                    .call(trendline);
+                $(this).attr("style","color:"+color+";"); 
+            } else {
+                $(this).attr("style","color:black;"); 
+            }
         } else {
-            $(this).find(".marker").first().addClass("glyphicon glyphicon-pushpin");
+            $(this).attr("style","color:black;"); 
         }
     });
 }
@@ -119,8 +172,6 @@ function updateNewsList(){
             newsitemcontainer.appendTo($("#news-list"));
         }
     }
-    $("#news-list").children().first().addClass("active");
-    drawVerticalTrendLine();
 }
 function updateNews(stock){
     var url = "./php_scripts/ajax/query/single_company_news.php?symbol="+stock;
@@ -129,7 +180,7 @@ function updateNews(stock){
         updateNewsList();
     });
 }
-function initLineGraph(inputval){
+function initLineGraph(){
     bisectDate = d3.bisector(function(d) { return d.date; }).left;
     x = techan.scale.financetime()
             .range([0, width]);
@@ -146,6 +197,22 @@ function initLineGraph(inputval){
     candlestick = techan.plot.candlestick()
             .xScale(x)
             .yScale(y);
+			
+			
+		
+	// here is for the indicator
+	sma0 = techan.plot.sma()
+			.xScale(x)
+			.yScale(y);
+	sma1 = techan.plot.sma()
+			.xScale(x)
+			.yScale(y);
+	ema2 = techan.plot.ema()
+			.xScale(x)
+			.yScale(y);
+			
+			
+			
     close = techan.plot.close()
             .xScale(x)
             .yScale(y);
@@ -195,18 +262,15 @@ function initLineGraph(inputval){
     svg.append("g")
             .attr("class", "volume")
             .attr("clip-path", "url(#clip)");
-	if(inputval===0){
-		// LINE REMOVE
-		svg.append("g")
-				.attr("class", "close")
-				.attr("clip-path", "url(#clip)");
-	
-	}else{
-		// CHART REMOVE
-		svg.append("g")
-				.attr("class", "candlestick")
-				.attr("clip-path", "url(#clip)");
-	}
+	// LINE REMOVE
+	svg.append("g")
+			.attr("class", "close")
+			.attr("clip-path", "url(#clip)");
+			
+	// CHART REMOVE
+	svg.append("g")
+			.attr("class", "candlestick")
+			.attr("clip-path", "url(#clip)");
 
     svg.append("g")
             .attr("class", "x axis")
@@ -218,8 +282,7 @@ function initLineGraph(inputval){
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
             .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Price ($)");
+            .style("text-anchor", "end");
     
     svg.append("g")
                 .attr("class", "volume axis");
@@ -253,10 +316,56 @@ function initLineGraph(inputval){
             .attr("y", 15);
     trendline = techan.plot.trendline()
             .xScale(x)
-            .yScale(y);            
+            .yScale(y);
+
+	
+	
+	// here is for indicator
+	svg.append("g")
+			.attr("class", "indicator sma ma-0")
+			.attr("clip-path", "url(#clip)");
+
+	svg.append("g")
+			.attr("class", "indicator sma ma-1")
+			.attr("clip-path", "url(#clip)");
+
+	svg.append("g")
+			.attr("class", "indicator ema ma-2")
+			.attr("clip-path", "url(#clip)");
+	/*
+	svg.append('text')
+			.attr("class", "lines legend")
+			.attr("x", 5)
+			.attr("y", -5)
+			.text("Price History")
+			.attr("fill", "black");	
+	svg.append('text')
+			.attr("class", "lines legend")
+			.attr("x", 5)
+			.attr("y", 15)
+			.text("SMA (10)")
+			.attr("fill", "#1f77b4");
+	
+	svg.append('text')
+			.attr("class", "lines legend")
+			.attr("x", 5)
+			.attr("y", 30)
+			.text("SMA (20)")
+			.attr("fill", "#aec7e8");
+	
+	svg.append('text')
+			.attr("class", "lines legend")
+			.attr("x", 5)
+			.attr("y", 45)
+			.text("EMA (50)")
+			.attr("fill", "#ff7f0e");
+	*/		
+				
+				
 }
 function mousemove(){
-    var x0 = x.invert(d3.mouse(this)[0]),
+    
+	var x0 = x.invert(d3.mouse(this)[0]),
             i = bisectDate(OverallData, x0, 1),
             d0 = OverallData[i - 1],
             d1 = OverallData[i],
@@ -296,6 +405,7 @@ function mousemove(){
                   "translate(" + width * -1 + "," +
                                  y(d.close) + ")")
                        .attr("x2", width + width);
+		
 }
 function hidecoords(){
     coordsText.text("");
@@ -312,16 +422,24 @@ function out() {
 function move(coords) {
 }
 
-
 // this part here is to do the toggle
 function updateData(inputval) {
 	// remove first
-    $("#linebody").empty();
-	svg.selectAll("*").remove();
+    //$("#linebody").empty();
+	//svg.selectAll("*").remove();
 	//svg.selectAll(".close").remove();
 	//svg.selectAll(".candlestick").remove();
-	initLineGraph(inputval);
-	makeLineGraph();
+	//initLineGraph(inputval);
+	//makeLineGraph();
+	if(inputval===0){
+        svg.select("g.candlestick").datum(OverallData).style("display","none").call(candlestick);
+		svg.select("g.close").datum(OverallData).style("display","inline").call(close);
+	}
+	if(inputval===1){
+        svg.select("g.close").datum(OverallData).style("display","none").call(close);
+        svg.select("g.candlestick").datum(OverallData).style("display","inline").call(candlestick);
+	}
+	//toggleInd(0);
 }
 
 /*
@@ -402,11 +520,13 @@ function draw() {
 	//svg.select("g.candlestick").call(candlestick.refresh);
 	svg.select("g.volume").call(volume.refresh);
 	svg.select("g.crosshair").call(crosshair);
-	/*
-	svg.select("g.sma.ma-0").call(sma0.refresh);
-	svg.select("g.sma.ma-1").call(sma1.refresh);
-	svg.select("g.ema.ma-2").call(ema2.refresh);
-	*/
+	
+	
+	svg.select("g.sma.ma-0").call(sma0);
+	svg.select("g.sma.ma-1").call(sma1);
+	svg.select("g.ema.ma-2").call(ema2);
+	
+	
 }
 function makeLineGraph(){
 	d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
@@ -419,6 +539,7 @@ function makeLineGraph(){
                 high: +d.High,
                 low: +d.Low,
                 close: +d.Close,
+				//close: +d.Adj,
                 volume: +d.Volume
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
@@ -431,125 +552,67 @@ function makeLineGraph(){
         y.domain(doma);
         yVolume.domain(techan.scale.plot.volume(data, accessor.v).domain());
         
-        svg.select("g.close").datum(data).call(close);
-        svg.select("g.candlestick").datum(data).call(candlestick);
-        svg.select("g.volume").datum(data).call(volume);
+        svg.select("g.close").datum(data).style("display","inline").call(close);
+        svg.select("g.candlestick").datum(data).style("display","none").call(candlestick);
+        svg.select("g.volume").datum(data).style("display","none").call(volume);
+		
+		/*
+		// here is for indicator
+		svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
+		svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma1);
+		svg.select("g.ema.ma-2").datum(techan.indicator.ema().period(50)(data)).call(ema2);
+		*/
+		svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).style("display","none").call(sma0);
+		svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).style("display","none").call(sma1);
+		svg.select("g.ema.ma-2").datum(techan.indicator.ema().period(50)(data)).style("display","none").call(ema2);
+		
         svg.select("g.crosshair").call(crosshair);
 		draw();
         
         // Associate the zoom with the scale after a domain has been applied
         zoom.x(x.zoomable()).y(y);
     });
-	
-	
-	
-	
-	/*
-	d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
-        var accessor = volume.accessor();
+}
 
-        data = data.map(function(d) {
-            return {
-                date: parseDate(d.Date),
-                open: +d.Open,
-                high: +d.High,
-                low: +d.Low,
-                close: +d.Close,
-                volume: +d.Volume
-            };
-        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-
-        OverallData=data;
-
-        x.domain(data.map(accessor.d));
-        y.domain(techan.scale.plot.volume(data, accessor.v).domain());
-
-        svg.append("g")
-            .datum(data)
-            .attr("class", "volume")
-            .call(volume);
-    });
-    // this part here is draw the outline
-    d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
-        var accessor = candlestick.accessor();
-
-        data = data.map(function(d) {
-            return {
-                date: parseDate(d.Date),
-                open: +d.Open,
-                high: +d.High,
-                low: +d.Low,
-                close: +d.Close,
-                volume: +d.Volume
-            };
-        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-
-        x.domain(data.map(accessor.d));
-        var doma = techan.scale.plot.ohlc(data, accessor).domain();
-        
-        // steal lower and upp from their domain method
-        minClose = doma[0];
-        maxClose = doma[1];
-        
-        y.domain(doma);
-        
-        // draw top line
-        svg.append("g")
-                .attr("class", "x axis")
-                .call(xTopAxis);
-
-        //draw bottom line
-        svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-        //draw left line
-        svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis);
-
-        //draw right line
-        svg.append("g")
-                .attr("class", "y axis")
-                .attr("transform", "translate(" + width + ",0)")
-                .call(yRightAxis);
-        
-        
-        svg.append('text')
-                .attr("x", 5)
-                .attr("y", 15)
-                .text(selectedCompany.company);
-    });
-    
-    // this part here is draw line graph
-    d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
-        var accessor = close.accessor();
-
-        data = data.map(function(d) {
-            return {
-                date: parseDate(d.Date),
-                open: +d.Open,
-                high: +d.High,
-                low: +d.Low,
-                close: +d.Close,
-                volume: +d.Volume
-            };
-        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-        
-        
-        x.domain(data.map(accessor.d));
-        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
-
-        svg.append("g")
-                .datum(data)
-                .attr("class", "close")
-                .call(close);
-        svg.append('g')
-                .attr("class", "crosshair")
-                .call(crosshair);
-    });
-	*/
+function toggleInd(inputval){
+	switch(inputval) {
+	case 0:
+		if(document.getElementById('SMA0').checked){
+			//svg.select("g.sma.ma-0").style("display", "none");
+			
+			svg.select("g.sma.ma-0").style("display", "inline");
+		}else{
+			
+			svg.select("g.sma.ma-0").style("display", "none");
+		}
+	case 1:
+		if(document.getElementById('SMA1').checked){
+			//svg.select("g.sma.ma-0").style("display", "none");
+			
+			svg.select("g.sma.ma-1").style("display", "inline");
+		}else{
+			
+			svg.select("g.sma.ma-1").style("display", "none");
+		}
+	case 2:
+		if(document.getElementById('EMA').checked){
+			//svg.select("g.sma.ma-0").style("display", "none");
+			
+			svg.select("g.ema.ma-2").style("display", "inline");
+		}else{
+			
+			svg.select("g.ema.ma-2").style("display", "none");
+		}
+	case 3:
+		if(document.getElementById('Vol').checked){
+			//svg.select("g.sma.ma-0").style("display", "none");
+			
+			svg.select("g.volume").style("display", "inline");
+		}else{
+			
+			svg.select("g.volume").style("display", "none");
+		}
+	}
 }
 
     
