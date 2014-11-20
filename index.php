@@ -107,17 +107,38 @@
             
     </div>
     <div id="companyInfo">
-        <font id="companyName" size="4" color="black">Company Name</font>
-        <font size="3" color="gray"> - </font>
-        <font id="companySymbol" size="4" color="gray">Company symbol</font><br>
-        <font id="companyValue" size="6" color="black">348.48 </font>
-        <img src="./img/blueArrow.png" id="postiveIcon" style="width:12px;height:13px"/>
-        <img src="./img/orangeArrow.png" id="negativeIcon" style="width:12px;height:13px"/>
-        <font id="growthVal" size="4"></font>
-        <font id="growthPercent" size="4"></font>
+		<table width="100%"> 
+			<tr>
+			<td width = "50%">
+				<font id="companyName" size="4" color="black">Company Name</font>
+				<font size="3" color="gray"> - </font>
+				<font id="companySymbol" size="4" color="gray">Company symbol</font><br>
+				<font id="companyValue" size="6" color="#606060"></font>
+				<img src="./img/blueArrow.png" id="postiveIcon" style="width:12px;height:13px"/>
+				<img src="./img/orangeArrow.png" id="negativeIcon" style="width:12px;height:13px"/>
+				<font id="growthVal" size="4"></font>
+				<font id="growthPercent" size="4"></font>
+			</td>
+			<td width = "25%">
+				<b>Volume:</b> <font id="companyVol" size="2"></font><br/>
+				<b>Average Volume (3m):</b> <font id="avgVol" size="2"> </font><br/>
+				<b>Market Cap:</b> <font id="marketcap" size="2"></font><br/>
+				<b>P/E (ttm):</b> <font id="pe" size="2"></font><br/>
+			</td>
+			<td width = "25%">
+				<b>Day's Range:</b> <font id="dayrange" size="2"></font><br/>
+				<b>52 Week Range:</b> <font id="yearrange" size="2"></font><br/>
+				<b>EPS (ttm):</b> <font id="eps" size="2"></font><br/>
+				<b>Div & Yield:</b> <font id="divandyield" size="2"></font><br/>
+			</td>
+
+			</tr>
+			
+		</table>
     </div>
 	
-	<div class="tooltip" id="divt" style="opacity:0"></div>
+	<div class="tooltip" id="divt" style="opacity:0">
+	</div>
 	<!--divt2 is for displaying the result of company search-->
 	<div class="tooltip" id="divt2" style="opacity:0"></div>
 </body>

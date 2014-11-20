@@ -1,3 +1,5 @@
+var vol_format = d3.format("0,000"); 
+	
 var margin = {top: 20, right: 50, bottom: 30, left: 50},
         width = $(window).width()/2+10 - margin.left - margin.right,
         height = $(window).height()-300 - margin.top - margin.bottom;
@@ -84,6 +86,7 @@ function configPopup(d){
         .text("("+d3.round(d.percentage,2)+"%)")
         .attr("color",d.netChange>0?"#1869f3":d.netChange==0?"#BEBEBE":"#e04810");
 
+	console.log(d);
     if(d.netChange>0){
         companyInfo.find('#postiveIcon').show();
         companyInfo.find('#negativeIcon').hide();
@@ -94,6 +97,58 @@ function configPopup(d){
         companyInfo.find('#postiveIcon').hide();
         companyInfo.find('#negativeIcon').hide();
     }
+	companyInfo.find('#companyVol').text(vol_format(d.volume));
+	var avgVol; 
+	if(d.avgvol.indexOf("N\/A")!=-1){
+		avgVol = "N/A";
+	} else {
+		avgVol = d.avgvol;
+	}
+    companyInfo.find('#avgVol').text(avgVol);
+	var marketcap;
+	if(d.marketcap.indexOf("N\/A")!=-1){
+		marketcap = "N/A";
+	} else {
+		marketcap = d.marketcap;
+	}	
+    companyInfo.find('#marketcap').text(marketcap);
+	var pe; 
+	if(isNaN(d.pe)){
+		pe = "N/A";
+	}else {
+		pe = +d.pe;
+	}
+	companyInfo.find('#pe').text(pe);
+	var dayrange; 
+	if(d.dayrange.indexOf("N\/A")!=-1){
+		dayrange = "N/A";
+	} else {
+		dayrange = d.dayrange;
+	}
+    companyInfo.find('#dayrange').text(dayrange);
+	var fiftytwowkrange = d.fiftytwowkrange; 
+	if(fiftytwowkrange.indexOf("\/")!=-1){
+		fiftytwowkrange = fiftytwowkrange.replace("\/", "/");
+	}
+    companyInfo.find('#yearrange').text(fiftytwowkrange);
+	var eps; 
+	if(isNaN(d.eps) && d.eps.indexOf("\/")!=-1){
+		eps = eps.replace("\/", "/");
+	}else if (isNaN(d.eps)) {
+		eps = "N/A";
+	}else {
+		eps = +d.eps; 
+	}
+	companyInfo.find('#eps').text(eps);
+	var divandyield; 
+	if(isNaN(d.divandyield) && d.divandyield.indexOf("\/")!=-1){
+		divandyield = d.divandyield.replace("\/", "/");
+	}else if (isNaN(d.divandyield)) {
+		divandyield = "N/A";
+	}else {
+		divandyield = +d.divandyield;
+	}
+    companyInfo.find('#divandyield').text(divandyield);
 
     $("#companydisplayinfo").append(companyInfo);
     $('#defaultGraphType').prop('checked', true);

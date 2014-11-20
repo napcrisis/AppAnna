@@ -25,7 +25,7 @@ var companies = [{"value":"Applied Optoelectronics Inc. (AAOI)","data":"AAOI"},{
     }
   });
 
-function createTooltip(position,symbol,company,adjclose,date,netChange,percentage,volume) {
+function createTooltip(position,symbol,company,adjclose,date,netChange,percentage,volume, marketcap) {
 	//div for tooltip
 	var divt2 = d3.select("body").select("#divt2");
 
