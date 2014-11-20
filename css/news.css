@@ -4,3 +4,7 @@
 	cursor: pointer;
 	width:350px;
 }
+.trendlines{
+    stroke: #FF0000;
+    stroke-width:2px;
+}
