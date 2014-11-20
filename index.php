@@ -75,8 +75,8 @@
 		
 		<div id="cellsizediv" class="footer">
 			Size by:
-			<input type="radio" name="cellsize" id="cellsizevol" value="volume" checked>Transacted Volume
-             <input type="radio" name="cellsize" id="cellsizecap" value="marketcap">Market Cap
+			<input type="radio" name="cellsize" id="cellsizevol" value="volume" checked>&nbsp;Transacted Volume&nbsp;
+             <input type="radio" name="cellsize" id="cellsizecap" value="marketcap">&nbsp;Market Cap
 		</div>
 		
     </div>

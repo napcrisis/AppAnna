@@ -7,7 +7,7 @@ var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
 var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
-
+var evenColor = "#9bfad7", oddColor = "#faa79b", selectedColor = "#9bbffa";
 var maxClose = -1;
 var minClose = -1;
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -74,24 +74,27 @@ function populateNews(d){
 function drawVerticalTrendLine(){
     $(".trendlines").remove();
     $(".x.annotation.top").remove();
+    var evenOddCounter = 0;
+
     $("#news-list").children().each(function(){
         if($(this).hasClass("active")){
+            evenOddCounter+=1;
             // populate this news onto news-description
             var dateParts = $(this).attr("date").split("-");
             var newsDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
+            console.log(minClose);
+            console.log(maxClose);
             var trendlineData = [
                 { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
             ];
             // this part is where the line is created and added to the chart
+            var color = evenOddCounter%2==1?oddColor:evenColor;
+
             svg.append("g")
                 .datum(trendlineData)
                 .attr("class", "trendlines")
+                .attr("style", "stroke:"+color+";")
                 .call(trendline);
-            //here is for annotation to indicate of news occurence
-            svg.append("g")
-                .attr("class", "x annotation top")
-                .datum([{value: newsDate}])
-                .call(timeAnnotation);
             $(this).find(".marker").first().removeClass("glyphicon glyphicon-pushpin");
         } else {
             $(this).find(".marker").first().addClass("glyphicon glyphicon-pushpin");
@@ -420,10 +423,12 @@ function makeLineGraph(){
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
+        var doma = techan.scale.plot.ohlc(data, accessor).domain();
         OverallData=data;
-
+        minClose = doma[0];
+        maxClose = doma[1];
         x.domain(data.map(accessor.d));
-        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+        y.domain(doma);
         yVolume.domain(techan.scale.plot.volume(data, accessor.v).domain());
         
         svg.select("g.close").datum(data).call(close);
