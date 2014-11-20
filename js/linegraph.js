@@ -10,7 +10,8 @@ var parseDate = d3.time.format("%d-%b-%y").parse;
 var sma0,sma1,ema2,bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 
 var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
-var colorStack = ["#516b41","#416b5b","#41516b","#6b5b41","#6b4151"];
+var colorStack = ["#ff9900","#ff3300","#6666cc","#669900","#cc6666"];
+var lighterColorStack = ["#ffd089","#ffb19d","#b0b0e5","#ddff99","#e0a1a1"];
 var newsLineStack;
 var maxClose = -1;
 var minClose = -1;
@@ -122,8 +123,6 @@ function drawVerticalTrendLine(){
                 }
                 index+=1;
             }
-            console.log(matchedOnIndex);
-            console.log(newsLineStack);
             // get a color not used
             if(matchedOnIndex==-1){
                 index = 0;
@@ -135,7 +134,6 @@ function drawVerticalTrendLine(){
                     index+=1;
                 }
             }
-            console.log(matchedOnIndex);
             // set color
             if(matchedOnIndex!=-1 && matchedOnIndex<colorStack.length){
                 newsLineStack[matchedOnIndex] = $(this).attr("date");
@@ -145,12 +143,12 @@ function drawVerticalTrendLine(){
                     .attr("class", "trendlines")
                     .attr("style", "stroke:"+color+";")
                     .call(trendline);
-                $(this).attr("style","color:"+color+";"); 
+                $(this).attr("style","background:"+lighterColorStack[matchedOnIndex]+";"); 
             } else {
-                $(this).attr("style","color:black;"); 
+                $(this).attr("style","background:white;"); 
             }
         } else {
-            $(this).attr("style","color:black;"); 
+            $(this).attr("style","background:white;"); 
         }
     });
 }
@@ -525,7 +523,7 @@ function draw() {
 	svg.select("g.sma.ma-0").call(sma0);
 	svg.select("g.sma.ma-1").call(sma1);
 	svg.select("g.ema.ma-2").call(ema2);
-	
+	drawVerticalTrendLine();
 	
 }
 function makeLineGraph(){
