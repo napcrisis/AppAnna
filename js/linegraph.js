@@ -6,7 +6,11 @@ var margin = {top: 20, right: 50, bottom: 30, left: 50},
 var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
+
 var sma0,sma1,ema2,bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+
+var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+var evenColor = "#9bfad7", oddColor = "#faa79b", selectedColor = "#9bbffa";
 
 var maxClose = -1;
 var minClose = -1;
@@ -72,26 +76,29 @@ function populateNews(d){
     updateNews(d.name);
 }
 function drawVerticalTrendLine(){
+    $(".trendlines").remove();
+    $(".x.annotation.top").remove();
+    var evenOddCounter = 0;
+
     $("#news-list").children().each(function(){
-        $(".trendlines").remove();
-        $(".x.annotation.top").remove();
         if($(this).hasClass("active")){
+            evenOddCounter+=1;
             // populate this news onto news-description
             var dateParts = $(this).attr("date").split("-");
-            var newsDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            var newsDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
+            console.log(minClose);
+            console.log(maxClose);
             var trendlineData = [
                 { start: { date: newsDate, value: minClose}, end: { date: newsDate, value: maxClose } }
             ];
             // this part is where the line is created and added to the chart
+            var color = evenOddCounter%2==1?oddColor:evenColor;
+
             svg.append("g")
                 .datum(trendlineData)
                 .attr("class", "trendlines")
+                .attr("style", "stroke:"+color+";")
                 .call(trendline);
-            //here is for annotation to indicate of news occurence
-            svg.append("g")
-                .attr("class", "x annotation top")
-                .datum([{value: newsDate}])
-                .call(timeAnnotation);
             $(this).find(".marker").first().removeClass("glyphicon glyphicon-pushpin");
         } else {
             $(this).find(".marker").first().addClass("glyphicon glyphicon-pushpin");
@@ -208,19 +215,15 @@ function initLineGraph(){
     svg.append("g")
             .attr("class", "volume")
             .attr("clip-path", "url(#clip)");
-    
-	//if(inputval===0){
-		// LINE REMOVE
-		svg.append("g")
-				.attr("class", "close")
-				.attr("clip-path", "url(#clip)");
-	
-	//}else{
-		// CHART REMOVE
-		svg.append("g")
-				.attr("class", "candlestick")
-				.attr("clip-path", "url(#clip)");
-	//}
+	// LINE REMOVE
+	svg.append("g")
+			.attr("class", "close")
+			.attr("clip-path", "url(#clip)");
+			
+	// CHART REMOVE
+	svg.append("g")
+			.attr("class", "candlestick")
+			.attr("clip-path", "url(#clip)");
 
     svg.append("g")
             .attr("class", "x axis")
@@ -343,18 +346,6 @@ function mousemove(){
                   "translate(" + x(d.date) + "," +
                                  y(d.close) + ")")
             .text(d.close);
-
-        svg.select("text.y3")
-            .attr("transform",
-                  "translate(" + x(d.date) + "," +
-                                 y(d.close) + ")")
-            .text(formatDate(d.date));
-
-        svg.select("text.y4")
-            .attr("transform",
-                  "translate(" + x(d.date) + "," +
-                                 y(d.close) + ")")
-            .text(formatDate(d.date));
 
         svg.select(".x")
             .attr("transform",
@@ -506,10 +497,12 @@ function makeLineGraph(){
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
+        var doma = techan.scale.plot.ohlc(data, accessor).domain();
         OverallData=data;
-
+        minClose = doma[0];
+        maxClose = doma[1];
         x.domain(data.map(accessor.d));
-        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+        y.domain(doma);
         yVolume.domain(techan.scale.plot.volume(data, accessor.v).domain());
         
         svg.select("g.close").datum(data).style("display","inline").call(close);

@@ -61,10 +61,6 @@ path.candle.down {
     stroke-dasharray: 1, 1;
 }
 
-.trendline {
-    stroke: #FF0000;
-    stroke-dasharray: 2, 2;
-}
 path.volume {
     fill: #AAAAAA;
     opacity: 0.9;
@@ -77,11 +73,11 @@ rect.pane {
 }
 
 .ma-0 path.line {
-	stroke: #1f77b4;
+	stroke: #20782e;
 }
 
 .ma-1 path.line {
-	stroke: #aec7e8;
+	stroke: #407880;
 }
 
 .ma-2 path.line {

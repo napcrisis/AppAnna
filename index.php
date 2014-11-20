@@ -75,8 +75,8 @@
 		
 		<div id="cellsizediv" class="footer">
 			Size by:
-			<input type="radio" name="cellsize" id="cellsizevol" value="volume" checked>Transacted Volume
-             <input type="radio" name="cellsize" id="cellsizecap" value="marketcap">Market Cap
+			<input type="radio" name="cellsize" id="cellsizevol" value="volume" checked>&nbsp;Transacted Volume&nbsp;
+             <input type="radio" name="cellsize" id="cellsizecap" value="marketcap">&nbsp;Market Cap
 		</div>
 		
     </div>
@@ -93,10 +93,10 @@
                 <div class="row col-md-12" id="linecontrols" style="margin-left:30px;">
                     <input type="radio" name="graphtype" id="defaultGraphType" value="line" onclick="updateData(0)" checked>&nbsp;Line&nbsp;
                     <input type="radio" name="graphtype" value="candle" onclick="updateData(1)">&nbsp;Candlestick&nbsp;
-					<label><input type="checkbox" id="Vol" value="Vol" onclick="toggleInd(3)"><font color = "#AAAAAA">Volume</font></label>&nbsp;
-					<label><input type="checkbox" id="SMA0" value="SMA0" onclick="toggleInd(0)"><font color = "#1f77b4">SMA (10)</font></label>&nbsp;
-					<label><input type="checkbox" id="SMA1" value="SMA1" onclick="toggleInd(1)"><font color = "#aec7e8">SMA (20)</font></label>&nbsp;
-					<label><input type="checkbox" id="EMA" value="EMA2" onclick="toggleInd(2)"><font color = "#ff7f0e">EMA (50)</font></label>&nbsp;
+					<label><input type="checkbox" id="Vol" value="Vol" onclick="toggleInd(3)"><font color = "#677369">&nbsp;Volume</font></label>&nbsp;
+					<label><input type="checkbox" id="SMA0" value="SMA0" onclick="toggleInd(0)"><font color = "#20782e">&nbsp;SMA (10)</font></label>&nbsp;
+					<label><input type="checkbox" id="SMA1" value="SMA1" onclick="toggleInd(1)"><font color = "#407880">&nbsp;SMA (20)</font></label>&nbsp;
+					<label><input type="checkbox" id="EMA" value="EMA2" onclick="toggleInd(2)"><font color = "#ff7f0e">&nbsp;EMA (50)</font></label>&nbsp;
                 </div>
             </div>
             <div class="row col-md-3" style="margin-right:0px;">
