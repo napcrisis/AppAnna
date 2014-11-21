@@ -10,9 +10,29 @@ var root;
 var node;
 var color = d3.scale.category10();
 var sizeBy = 0;
-
 var selectedCompany; // LINKAGE TO LINEGRAPH
-
+var sortingByVolume = function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
+      if(a.parent && a.parent.depth==0){
+        if(b.parent && b.parent.depth==0){
+            return a.value < b.value? -1:1;
+        }
+        return 1;
+      } else if (b.parent && b.parent.depth==0){
+        return 1;
+      }
+      return a.volume-b.volume;
+    };
+var sortingByMarket = function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
+      if(a.parent && a.parent.depth==0){
+        if(b.parent && b.parent.depth==0){
+            return a.value < b.value? -1:1;
+        }
+        return 1;
+      } else if (b.parent && b.parent.depth==0){
+        return 1;
+      }
+      return a.volume-b.volume;
+    };
 function formatNumber(d) { d3.format(",d");}
 var treemap = d3.layout.treemap()
     .round(false)
@@ -23,17 +43,16 @@ var treemap = d3.layout.treemap()
         return size(d);
     })
     .mode("squarify") // default
-    .sort(function(a, b) {  // sorting by name, so that order of cells will be randomly fixed
-      if(a.parent && a.parent.name=="nasdaq"){
-        if(b.parent && b.parent.name=="nasdaq"){
-            return a.value < b.value? -1:1;
-        }
-        return 1;
-      } else if (b.parent && b.parent.name=="nasdaq"){
-        return 1;
-      }
-      return a.volume-b.volume;
-    });
+    .sort(sortingByVolume);
+var treemapMarket = d3.layout.treemap()
+    .round(false)
+    .ratio(chartHeight / chartWidth * 0.5 * (1 + Math.sqrt(5)))
+    .size([chartWidth, chartHeight])
+    .value(function(d) {
+        return size(d);
+    })
+    .mode("squarify") // default
+    .sort(sortingByMarket);
 
 var chart = d3.select("#body")
     .append("svg:svg")
@@ -329,14 +348,21 @@ d3.json("./php_scripts/ajax/query/stock_treemap_json.php?daysbeforecurrent="+dat
 
 	//this section is for changing how the cells are sized
     d3.select("#cellsizecap").on("click", function() { //if market cap is selected
-		treemap.value(this.value == "volume" ? size : count)
+		treemapMarket
+            .sticky(false)
+            .value(this.value == "volume" ? size : count)
             .nodes(root);
+
         zoomo(node);
 	});
 	
 	d3.select("#cellsizevol").on("click", function() { //if volume is selected
-		treemap.value(this.value == "volume" ? size : count)
+		treemap
+            .sticky(false)
+            .value(this.value == "volume" ? size : count)
             .nodes(root);
+        treemap
+            .sticky(true);
         zoomo(node);
 	});
 	
@@ -348,9 +374,7 @@ function size(d) {
 		return d.volume;
 	}else{ //if market cap is selected
 		var marketcap = d.marketcap;
-		
 		var marketcapno = marketcap.substring(0, marketcap.length - 2);
-		
 		if(marketcap.indexOf("M") != -1) {
 			marketcapno = d3.round(marketcapno,0);
 		} else if(marketcap.indexOf("B") != -1) {
@@ -366,17 +390,15 @@ function size(d) {
 function count(d) {
     //return 1;
 	var marketcap = d.marketcap;
-		
-		var marketcapno = marketcap.substring(0, marketcap.length - 2);
-		
-		if(marketcap.indexOf("M") != -1) {
-			marketcapno = d3.round(marketcapno,0);
-		} else if(marketcap.indexOf("B") != -1) {
-			marketcapno = d3.round(marketcapno*1000,0);
-		} else {
-			marketcapno = 0;
-		}
-		return marketcapno;
+	var marketcapno = marketcap.substring(0, marketcap.length - 2);
+	if(marketcap.indexOf("M") != -1) {
+		marketcapno = d3.round(marketcapno,0);
+	} else if(marketcap.indexOf("B") != -1) {
+		marketcapno = d3.round(marketcapno*1000,0);
+	} else {
+		marketcapno = 0;
+	}
+	return marketcapno;
 }
 
 

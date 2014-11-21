@@ -67,7 +67,11 @@ function htmlEncode(value){
 function configPopup(d){
     $("#linebody").empty();
     $("#companydisplayinfo").empty();
-
+    $("#companydisplayinfo").empty();
+    $("#Vol").prop('checked', false);
+    $("#SMA1").prop('checked', false);
+    $("#SMA0").prop('checked', false);
+    $("#EMA").prop('checked', false);
     // reset news line
     newsLineStack = ["","","","",""];
     $("#news-list").empty();
@@ -254,9 +258,7 @@ function initLineGraph(){
     candlestick = techan.plot.candlestick()
             .xScale(x)
             .yScale(y);
-			
-			
-		
+
 	// here is for the indicator
 	sma0 = techan.plot.sma()
 			.xScale(x)
@@ -267,8 +269,6 @@ function initLineGraph(){
 	ema2 = techan.plot.ema()
 			.xScale(x)
 			.yScale(y);
-			
-			
 			
     close = techan.plot.close()
             .xScale(x)
@@ -362,10 +362,7 @@ function initLineGraph(){
             .translate([0, height]);
     crosshair = techan.plot.crosshair()
         .xAnnotation([timeAnnotation, timeTopAnnotation])
-        .yAnnotation([ohlcAnnotation, ohlcRightAnnotation])
-        .on("enter", enter)
-        .on("out", out)
-        .on("move", move);
+        .yAnnotation([ohlcAnnotation, ohlcRightAnnotation]);
     coordsText = svg.append('text')
             .style("text-anchor", "end")
             .attr("class", "coords")
@@ -374,8 +371,6 @@ function initLineGraph(){
     trendline = techan.plot.trendline()
             .xScale(x)
             .yScale(y);
-
-	
 	
 	// here is for indicator
 	svg.append("g")
@@ -467,27 +462,9 @@ function mousemove(){
 function hidecoords(){
     coordsText.text("");
 }
-function enter() {
-    coordsText.style("display", "inline");
-}
-
-function out() {
-    coordsText.style("display", "none");
-}
-
-// this part reflects the top right hand corner value
-function move(coords) {
-}
 
 // this part here is to do the toggle
 function updateData(inputval) {
-	// remove first
-    //$("#linebody").empty();
-	//svg.selectAll("*").remove();
-	//svg.selectAll(".close").remove();
-	//svg.selectAll(".candlestick").remove();
-	//initLineGraph(inputval);
-	//makeLineGraph();
 	if(inputval===0){
         svg.select("g.candlestick").datum(OverallData).style("display","none").call(candlestick);
 		svg.select("g.close").datum(OverallData).style("display","inline").call(close);
@@ -496,77 +473,8 @@ function updateData(inputval) {
         svg.select("g.close").datum(OverallData).style("display","none").call(close);
         svg.select("g.candlestick").datum(OverallData).style("display","inline").call(candlestick);
 	}
-	//toggleInd(0);
 }
 
-/*
-// this part here is to do the toggle
-function updateData(inputval) {
-
-    if(inputval===1){ // candlestick
-
-        // remove first
-        svg.selectAll(".close").remove();
-
-        // this part here is draw candlestick
-        d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
-            var accessor = candlestick.accessor();
-
-            data = data.map(function(d) {
-                return {
-                    date: parseDate(d.Date),
-                    open: +d.Open,
-                    high: +d.High,
-                    low: +d.Low,
-                    close: +d.Close,
-                    volume: +d.Volume
-                };
-            }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-
-
-            x.domain(data.map(accessor.d));
-            y.domain(techan.scale.plot.ohlc(data, accessor).domain());
-
-            svg.append("g")
-                .datum(data)
-                .attr("class", "candlestick")
-                .call(candlestick);
-        });
-
-    }else{ // line chart
-
-        // remove first
-        svg.selectAll(".candlestick").remove();
-
-        // this part here is draw line
-        d3.csv("./php_scripts/ajax/query/single_company_stocks.php?symbol="+selectedCompany.name, function(error, data) {
-            var accessor = close.accessor();
-
-            data = data.map(function(d) {
-                return {
-                    date: parseDate(d.Date),
-                    open: +d.Open,
-                    high: +d.High,
-                    low: +d.Low,
-                    close: +d.Close,
-                    volume: +d.Volume
-                };
-            }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-
-
-            x.domain(data.map(accessor.d));
-            y.domain(techan.scale.plot.ohlc(data, accessor).domain());
-
-            svg.append("g")
-                    .datum(data)
-                    .attr("class", "close")
-                    .call(close);
-
-        });
-
-    }
-}
-*/
 function draw() {
 	svg.select("g.candlestick").call(candlestick);
 	svg.select("g.close").call(close);

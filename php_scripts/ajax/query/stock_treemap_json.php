@@ -58,7 +58,7 @@ if(isset($_GET["daysbeforecurrent"]) && is_numeric($_GET["daysbeforecurrent"])){
 
     }
     $nasdaq = new ind;
-    $nasdaq->name = "nasdaq";
+    $nasdaq->name = "NASDAQ";
     $nasdaq->children = $industries;
     unset($nasdaq->value);
     print json_encode($nasdaq,JSON_NUMERIC_CHECK);
