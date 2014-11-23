@@ -15,9 +15,10 @@ $(function(){
 					var netChange = $(this).attr("data-netchange");
 					var percentage = $(this).attr("data-percentage");
 					var volume = $(this).attr("data-volume");
+					var marketcap = $(this).attr("data-marcap");
 					$(this).children().last().attr("style","border:1px solid #000;");
 					var position = $(this).position();
-					createTooltip(position,symbol,company,adjclose,date,netChange,percentage,volume);
+					createTooltip(position,symbol,company,adjclose,date,netChange,percentage,volume, marketcap);
 				} else{
 					$(this).children().last().attr("style","");
 				}
@@ -35,11 +36,13 @@ $(function(){
 		var vol_format = d3.format("0,000"); 
 
 		if(netChange > 0 ){
-			textToPrint2 = "<font size='4px'><b>" + company + " (" + symbol + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + adjclose + "</b></font>   <i>"+ date + "</i><br>Net Change: <font color='green'><b>" + d3.round(netChange,2) + "  " + d3.round(percentage,2) + "%</b></font><br>Volume: " + vol_format(volume) + "<br><i>(Click for more details)</i>";
-		} else {
-			textToPrint2 = "<font size='4px'><b>" + company + " (" + symbol + ")</b></font>" + "<br><font size='3px' color='#606060'><b>$" + adjclose + "</b></font>   <i>"+ date + "</i><br>Net Change: <font color='red'><b>" + d3.round(netChange,2) + "  " + d3.round(percentage,2) + "%</b></font><br>Volume: " + vol_format(volume) + "<br><i>(Click for more details)</i>";
-		}
-
+				textToPrint2 = "<font size='4px'><b>" + company + " (" + symbol + ")</b></font>" + "<br><font size='5px' color='#606060'><b>USD $" + adjclose + "</b></font><br>Net Change: <img src='./img/blueArrow.png' style='width:12px;height:13px'> <font color='#1869f3'><b>" + d3.round(netChange,2) + "  (" + d3.round(percentage,2) +"%)</b></font><br>Volume: " + vol_format(volume) + "<br>Market Cap: " + marketcap+"<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+			} else if (netChange == 0 ){
+				textToPrint2 = "<font size='4px'><b>" + company + " (" + symbol + ")</b></font>" + "<br><font size='5px' color='#606060'><b>USD $" + adjclose + "</b></font> <br>Net Change: <b>" + d3.round(netChange,2) + "  (" + d3.round(percentage,2) + "%)</b><br>Volume: " + vol_format(volume) + "<br>Market Cap: " + marketcap+"<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+			} else {
+				textToPrint2 = "<font size='4px'><b>" + company + " (" + symbol + ")</b></font>" + "<br><font size='5px' color='#606060'><b>USD $" + adjclose + "</b></font> <br>Net Change: <img src='./img/orangeArrow.png' style='width:12px;height:13px'> <font color='#e04810'><b>" + d3.round(netChange,2) + "  (" + d3.round(percentage,2) + "%)</b></font><br>Volume: " + vol_format(volume) + "<br>Market Cap: " + marketcap+ "<br><font color='#808080'><i>(Click cell for more details)</i></font>";
+			}
+			
 		//this section flips the tooltip if it's nearing the edge
 		var xpos2 = position.left;
 		if(xpos2 >= chartWidth - 230) {

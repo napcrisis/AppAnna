@@ -133,16 +133,13 @@
 			</td>
 
 			</tr>
-			
 		</table>
     </div>
-	
 	<div class="tooltip" id="divt" style="opacity:0">
 	</div>
 	<!--divt2 is for displaying the result of company search-->
 	<div class="tooltip" id="divt2" style="opacity:0"></div>
 </body>
-
 
 <script type="text/javascript" src="./js/treemap_json.js"></script>
 <script type="text/javascript" src="./js/linegraph.js"></script>
