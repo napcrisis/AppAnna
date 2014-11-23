@@ -15,5 +15,6 @@
 * Create a new database called "newssources" and import the mysql file in setup folder. Remember to click newssources database first before importing.
 * by visiting http://localhost/is428/treemap.htmlyou should see a proper treemap. 
 * if you face issue using git clone git@bitbucket.org, just download a copy
-
+*
+* if you face more problems, please email Tommy.soh.2011@smu.edu.sg for assistance
 [Wiki](https://wiki.smu.edu.sg/1415t1is428/Anna%27s_kakia_Proposal)

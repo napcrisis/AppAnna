@@ -83,7 +83,7 @@ function configPopup(d){
         .show();
     companyInfo.find('#companyName').text(d.company);
     companyInfo.find('#companySymbol').text(d.name);
-    companyInfo.find('#companyValue').text("$"+d.close);
+    companyInfo.find('#companyValue').text("USD $"+d.close);
     companyInfo.find('#growthVal')
         .text(d3.round(d.netChange,2))
         .attr("color",d.netChange>0?"#1869f3":d.netChange==0?"#BEBEBE":"#e04810");
@@ -382,36 +382,6 @@ function initLineGraph(){
 	svg.append("g")
 			.attr("class", "indicator ema ma-2")
 			.attr("clip-path", "url(#clip)");
-	/*
-	svg.append('text')
-			.attr("class", "lines legend")
-			.attr("x", 5)
-			.attr("y", -5)
-			.text("Price History")
-			.attr("fill", "black");	
-	svg.append('text')
-			.attr("class", "lines legend")
-			.attr("x", 5)
-			.attr("y", 15)
-			.text("SMA (10)")
-			.attr("fill", "#1f77b4");
-	
-	svg.append('text')
-			.attr("class", "lines legend")
-			.attr("x", 5)
-			.attr("y", 30)
-			.text("SMA (20)")
-			.attr("fill", "#aec7e8");
-	
-	svg.append('text')
-			.attr("class", "lines legend")
-			.attr("x", 5)
-			.attr("y", 45)
-			.text("EMA (50)")
-			.attr("fill", "#ff7f0e");
-	*/		
-				
-				
 }
 function mousemove(){
     
