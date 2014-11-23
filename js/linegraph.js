@@ -9,7 +9,7 @@ var OverallData;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
 
-var sma0,sma1,ema2,bisectDate,volumeAxis,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
+var sma0,sma1,ema2,bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 
 var bisectDate,yVolume,zoom,trendline,crosshair,volume,x,y,candlestick,close,xAxis,xTopAxis,yAxis,yRightAxis,ohlcAnnotation,ohlcRightAnnotation,timeAnnotation,timeTopAnnotation, svg, coordsText,newsdata, currentNewsdata;
 var colorStack = ["#ff9900","#ff3300","#6666cc","#669900","#cc6666"];
@@ -279,12 +279,6 @@ function initLineGraph(){
     yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
-	
-	volumeAxis = d3.svg.axis()
-			.scale(yVolume)
-			.orient("left")
-			.ticks(3)
-			.tickFormat(d3.format(",.3s"));
 			
     svg = d3.select("#linebody").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -347,11 +341,6 @@ function initLineGraph(){
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end");
-    
-    svg.append("g")
-			.attr("class", "volume axis")
-			.attr("transform", "translate(" + width + ",0)")
-			.call(volumeAxis);
 
     svg.append("rect")
             .attr("class", "pane")
@@ -407,7 +396,8 @@ function mousemove(){
         + ohlcAnnotation.format()(d.open) + " H:" 
         + ohlcAnnotation.format()(d.high) + " L:" 
         + ohlcAnnotation.format()(d.low) + " C:" 
-        + ohlcAnnotation.format()(d.close)).style("font-weight","bold");
+        + ohlcAnnotation.format()(d.close) + " Vol:" 
+        + vol_format(d.volume)).style("font-weight","bold");
         svg.select("circle.y")
             .attr("transform",
                   "translate(" + x(d.date) + "," +
@@ -459,7 +449,6 @@ function draw() {
 	svg.select("g.close").call(close);
 	svg.select("g.x.axis").call(xAxis);
 	svg.select("g.y.axis").call(yAxis);
-	svg.select("g.volume.axis").call(volumeAxis);
 
 	// We know the data does not change, a simple refresh that does not perform data joins will suffice.
 	//svg.select("g.candlestick").call(candlestick.refresh);
@@ -500,7 +489,6 @@ function makeLineGraph(){
         svg.select("g.close").datum(data).style("display","inline").call(close);
         svg.select("g.candlestick").datum(data).style("display","none").call(candlestick);
         svg.select("g.volume").datum(data).style("display","none").call(volume);
-		svg.select("g.volume.axis").style("display","none").call(volumeAxis);
 		
 		/*
 		// here is for indicator
@@ -554,11 +542,9 @@ function toggleInd(inputval){
 			//svg.select("g.sma.ma-0").style("display", "none");
 			
 			svg.select("g.volume").style("display", "inline");
-			svg.select("g.volume.axis").style("display","inline");
 		}else{
 			
 			svg.select("g.volume").style("display", "none");
-			svg.select("g.volume.axis").style("display","none");
 		}
 	}
 }
