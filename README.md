@@ -5,16 +5,25 @@
  - Visualize individual companies' stock data and their news
  - Allow users to browse for correlation between news and stock data
  - Allow users to use technical analysis on the stock data from the company of interest
+### Visualization ###
+![Industry level](https://raw.githubusercontent.com/napcrisis/AppAnna/master/screenshot/industry.png "AppAnna Industry Overview")
+Treemap - Allow quick identification of critical players in industry and whether they are doing well
+ - Coloring of treemap is by increase in stock prices over time
+ - Size of treemap is sorted from big to small
+ - Treemap boxes squarified to improve visual understanding of data
 
+![Company level](https://raw.githubusercontent.com/napcrisis/AppAnna/master/screenshot/company.png "AppAnna Company review")
+Chart - Multiple technical analysis tools made available including
+ - Simple Moving Averages (10 and 20 days)
+ - Expotential moving averages (50 days) 
+These are common technical analysis tools. We also use other data visualization like line, candlestick, barchart
+ - Candlestick is commonly used for stock data so it should be intuitive and comfortable for experienced investors
+ - Barchart is used to indicate transaction volume 
+The last is the vertical colored lines which indicates the date which the news occurred. This tool, attempts to allow users to find correlation between news and stock data
 ### DEMO ###
 Visit: http://sleep.strangled.net/is428/
 
-
-### What is this repository for? ###
-
-* For Prof Kam to stalk us.
-
-### How do I get set up? ###
+### Setup local copy  ###
 
 * Install MAMP/WAMP depending on your operating system.
 * download & install git-scm with default settings
