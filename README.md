@@ -5,6 +5,7 @@
  - Visualize individual companies' stock data and their news
  - Allow users to browse for correlation between news and stock data
  - Allow users to use technical analysis on the stock data from the company of interest
+
 ### Visualization ###
 ![Industry level](https://raw.githubusercontent.com/napcrisis/AppAnna/master/screenshot/industry.png "AppAnna Industry Overview")
 Treemap - Allow quick identification of critical players in industry and whether they are doing well
