@@ -1,4 +1,14 @@
 # Stock Anna #
+### Purpose  ###
+ - Crawl  yahoo stock market data and news
+ - Visualize the NASDAQ market (in demo is only 2014 but crawler can do more) based on size in its industry and the market as a whole.
+ - Visualize individual companies' stock data and their news
+ - Allow users to browse for correlation between news and stock data
+ - Allow users to use technical analysis on the stock data from the company of interest
+
+### DEMO ###
+Visit: http://sleep.strangled.net/is428/
+
 
 ### What is this repository for? ###
 
